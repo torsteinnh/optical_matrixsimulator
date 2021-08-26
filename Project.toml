@@ -1,0 +1,4 @@
+name = "simulator"
+uuid = "ff2c548e-ca0f-4ef0-904d-a9760906fddf"
+authors = ["torsteinnh <torsteinnh@gmail.com>"]
+version = "0.1.0"
