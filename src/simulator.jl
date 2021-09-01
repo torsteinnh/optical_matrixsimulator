@@ -1,5 +1,8 @@
 module simulator
 
-greet() = print("Hello World!")
+export matrixcore, fresnelltools
 
-end # module
+include("matrixcore.jl")
+include("fresnelltools.jl")
+
+end # simulator
