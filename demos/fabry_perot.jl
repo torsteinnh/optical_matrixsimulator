@@ -8,7 +8,7 @@ using simulator.fresnelltools
 
 mirror1_r = 0.6
 mirror2_r = 0.6
-distance = 1e-3
+distance = 3e-4
 
 mirror1 = [
     1 - mirror1_r mirror1_r;
@@ -19,10 +19,10 @@ mirror2 = [
     mirror2_r     1 - mirror2_r
 ]
 
-gap(ν) = FresnellSlab(1, ν/ustrip(c_0), distance)
+gap(ν) = FresnellSlab(1, 2*π*ν/ustrip(c_0), distance)
 
 transmittance(ν) = CascadeScattering([mirror1, gap(ν), mirror2])[1, 1]
-golden(ν) = (1 - mirror1_r) * (1 - mirror2_r) * ℯ^(-im * distance * ν / ustrip(c_0)) / (1 - mirror1_r * mirror2_r * ℯ^(-2im * distance * ν / ustrip(c_0)))
+golden(ν) = (1 - mirror1_r) * (1 - mirror2_r) * ℯ^(-im * distance * 2*π*ν / ustrip(c_0)) / (1 - mirror1_r * mirror2_r * ℯ^(-2im * distance * 2*π*ν / ustrip(c_0)))
 
 xs = 1e9:1e8:2e12
 transmission = map(ν -> abs(transmittance(ν))^2, xs)

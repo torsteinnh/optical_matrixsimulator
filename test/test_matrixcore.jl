@@ -48,4 +48,5 @@ using .matrixcore
             @test machine[2, 1] ≈ r12 + (t12 * t21 * r23 * ℯ^(-ϕ * 2im)) / (1 - (r21 * r23 * ℯ^(-ϕ * 2im)))
         end
     end
+    
 end
