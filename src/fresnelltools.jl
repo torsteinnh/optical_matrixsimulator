@@ -4,7 +4,7 @@ using LinearAlgebra
 
 using ..matrixcore
 
-export FresnellBoundrary, FresnellSlab
+export FresnellBoundrary, FresnellSlab, Grating, ContinousBorder
 
 
 function FresnellBoundrary(n1::Number, n2::Number)::Matrix{Number}
@@ -50,8 +50,38 @@ function FresnellSlab(n::Number, k_0::Number, d::Number)::Matrix{Number}
     [
         delay 0;
         0     delay
-    ]
-    
+    ] 
+end
+
+function Grating(n_spechial::Number, n_normal::Number, d_spechial::Real, d_normal::Real, layers::Int, k_0::Number)::Matrix{Number}
+    # A utility for creating the scattering matrix of a periodic grating
+
+    border_normal_spechial = FresnellBoundrary(n_normal, n_spechial)
+    bulk_spechial = FresnellSlab(n_spechial, k_0, d_spechial)
+    border_spechial_normal = FresnellBoundrary(n_spechial, n_normal)
+    bulk_normal = FresnellSlab(n_normal, k_0, d_normal)
+
+    cell = CascadeScattering([border_normal_spechial, bulk_spechial, border_spechial_normal, bulk_normal])
+    Repeating(cell, layers)
+end
+
+function ContinousBorder(n_from::Number, n_to::Number, d::Real, k_0::Number, stepps::Int)::Matrix{Number}
+    # A utility for creating a semi-continous change in refractive index
+    # The gradient is approximated as linear
+
+    components = Array{Matrix{Number}}(undef, 2 * stepps)
+
+    n_stepp = (n_to - n_from) / stepps
+    d_stepp = d / stepps
+    for i in 1:stepps
+        n1 = n_from + (i - 1) * n_stepp
+        n2 = n1 + n_stepp
+
+        components[2 * i - 1] = FresnellBoundrary(n1, n2)
+        components[2 * i] = FresnellSlab(n2, k_0, d_stepp)
+    end
+
+    CascadeScattering(components)
 end
 
 

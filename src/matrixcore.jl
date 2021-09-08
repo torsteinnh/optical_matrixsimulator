@@ -1,6 +1,6 @@
 module matrixcore
 
-export StoM, MtoS, CascadeScattering
+export StoM, MtoS, CascadeScattering, Repeating
 
 using LinearAlgebra
 
@@ -40,7 +40,7 @@ function MtoS(M::Matrix{T})::Matrix{<:Number} where T <: Number
 end
 
 
-function CascadeScattering(layers::Vector{Matrix{T}}) where T <: Number
+function CascadeScattering(layers::Vector{Matrix{Number}})
     # Generates the total S matrix for a layered system
     # Matrixes are given in the order the elements appear, the array is inversed inside the function
     accumulated = I
@@ -50,6 +50,14 @@ function CascadeScattering(layers::Vector{Matrix{T}}) where T <: Number
     end
 
     MtoS(accumulated)
+end
+
+
+function Repeating(cell::Matrix{T}, repetition::Number)::Matrix{T} where T <: Number
+    # Simple helpertool to make sure gratings are handleded correctly
+    # This helper helps achieve the goal that transfer matrices are only handled in this module
+    M = StoM(cell)
+    MtoS(M ^ repetition)
 end
 
 

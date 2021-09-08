@@ -126,3 +126,5 @@ Temporary Items
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,julia,visualstudiocode,emacs
 
+.stignore
+
