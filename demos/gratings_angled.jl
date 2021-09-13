@@ -1,9 +1,8 @@
 using Plots
-import PhysicalConstants.CODATA2018: c_0
-using Unitful
 
-# include("../src/simulator.jl")
 using simulator.fresnelltools
+using simulator.utilities
+
 
 n_normal = 1.4
 n_spechial = 1
@@ -17,7 +16,7 @@ angles = 0:1e-2:(π/2)
 layers = 100
 
 
-gratings(ν, θ) = Grating(n_spechial, n_normal, grating_width, gap_width, layers, 2*π*ν/ustrip(c_0), θ)
+gratings(ν, θ) = Grating(n_spechial, n_normal, grating_width, gap_width, layers, 2*π*ν/c_0, θ)
 get_r_te(ν, θ) = abs((gratings(ν, θ)[1] * [1, 0])[2])^2
 get_r_tm(ν, θ) = abs((gratings(ν, θ)[2] * [1, 0])[2])^2
 

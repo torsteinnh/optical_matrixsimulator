@@ -4,7 +4,7 @@ using LinearAlgebra
 
 using ..matrixcore
 
-export FresnellBoundrary, FresnellSlab, Grating, ContinousBorder
+export FresnellBoundrary, FresnellSlab, Grating, ContinousBorder, PlasmoneScattering
 
 
 function FresnellBoundrary(n1::Number, n2::Number)::Matrix{Number}
@@ -99,6 +99,18 @@ function ContinousBorder(n_from::Number, n_to::Number, d::Real, k_0::Number, ste
     end
 
     CascadeScattering(components)
+end
+
+function PlasmoneScattering(β, β0, Δβ)::Number
+    # A model for reflection coefficient R at a prism-plasmone-coupling
+    # Equation from Maier(2007) eq. 3.1
+    # β is dependent on the SPP system, β0 is the "Singel interface value"
+    # β = β0 + Re{Δβ}
+
+    Γlr = imag(Δβ)
+    Γabs = imag(β0)
+
+    1 - (4 * Γlr * Γabs) / ((β - (β0 + Δβ))^2 + (Γlk + Γabs)^2)
 end
 
 
