@@ -65,6 +65,23 @@ function Grating(n_spechial::Number, n_normal::Number, d_spechial::Real, d_norma
     Repeating(cell, layers)
 end
 
+function Grating(n_spechial::Number, n_normal::Number, d_spechial::Real, d_normal::Real, layers::Int, k_0::Number, θ1::Real)::Tuple{Matrix{Number}, Matrix{Number}}
+    # A utility similar to Grating, but it takes an angle and assumes an infinitely wide grating
+    # Returns the TE and TM scattering matrices for the grating
+    # Unlike the angleded FresnellBoundrary tool, no angle is returned, this is because the grating assumes normal material on both sides
+
+    n_s_te, n_s_tm, θ2 = FresnellBoundrary(n_normal, n_spechial, θ1)
+    s_n_te, s_n_tm, _  = FresnellBoundrary(n_spechial, n_normal, θ2)
+
+    n_b = FresnellSlab(n_normal, k_0, d_normal / cos(θ1))
+    s_b = FresnellSlab(n_spechial, k_0, d_spechial / cos(θ2))
+
+    cell_te = CascadeScattering([n_s_te, s_b, s_n_te, n_b])
+    cell_tm = CascadeScattering([n_s_tm, s_b, s_n_tm, n_b])
+
+    Repeating(cell_te, layers), Repeating(cell_tm, layers)
+end
+
 function ContinousBorder(n_from::Number, n_to::Number, d::Real, k_0::Number, stepps::Int)::Matrix{Number}
     # A utility for creating a semi-continous change in refractive index
     # The gradient is approximated as linear

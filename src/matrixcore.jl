@@ -40,7 +40,7 @@ function MtoS(M::Matrix{T})::Matrix{<:Number} where T <: Number
 end
 
 
-function CascadeScattering(layers::Vector{Matrix{Number}})
+function CascadeScattering(layers::Vector)::Matrix{Number}
     # Generates the total S matrix for a layered system
     # Matrixes are given in the order the elements appear, the array is inversed inside the function
     accumulated = I
