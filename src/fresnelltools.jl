@@ -47,10 +47,11 @@ end
 function FresnellSlab(n::Number, k_0::Number, d::Number)::Matrix{Number}
     # Equation from Saleh & Teich 3.ed. eq.7.1-4
     delay = ℯ^(-1im * n * k_0 * d)
-    [
+    dampening = ℯ^(- d * 1e-6)
+    dampening .* [
         delay 0;
         0     delay
-    ] 
+    ]
 end
 
 function Grating(n_spechial::Number, n_normal::Number, d_spechial::Real, d_normal::Real, layers::Int, k_0::Number)::Matrix{Number}

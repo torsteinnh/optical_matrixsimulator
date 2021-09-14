@@ -1,7 +1,8 @@
 using Plots
 
 using simulator.fresnelltools
-using simulator.utilities
+include("../src/utilities.jl")
+using .utilities
 
 
 n_fiber = 1.4
@@ -9,7 +10,7 @@ n_grating = 1
 
 grating_width = 10e-9
 gap_width = 400e-9
--
+
 output(ν) = Grating(n_grating, n_fiber, grating_width, gap_width, 100, 2*π*ν/c_0) * [1, 0]
 
 

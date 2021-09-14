@@ -1,7 +1,8 @@
 using Plots
 
 using simulator.fresnelltools
-using simulator.utilities
+include("../src/utilities.jl")
+using .utilities
 
 
 n_normal = 1.4
