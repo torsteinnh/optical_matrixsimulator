@@ -8,38 +8,40 @@ export FresnellBoundrary, FresnellSlab, Grating, ContinousBorder, PlasmoneScatte
 
 
 function FresnellBoundrary(n1::Number, n2::Number)::Matrix{Number}
-    # Equation from Saleh & Teich 3.ed. eq.7.1-13
+    # Equation from Saleh & Teich 3.ed. eq.6.2-8 & eq. 6.2-9
     # Returns the scattering matrix for the relevant border
-    (1/(n1 + n2)) .* [
-        2*n1  n2-n1;
-        n1-n2 2*n2
-    ]
+    
+    FresnellBoundrary(n1, n2, 0)[1]
 end
 
 function FresnellBoundrary(n1::Number, n2::Number, θ1::Number)::Tuple{Matrix{Number}, Matrix{Number}, Number}
-    # Equation from Saleh & Teich 3.ed. eq.7.1-23
+    # Equation from Saleh & Teich 3.ed. eq.6.2-8 & eq. 6.2-9
     # It is similar to the other FresnellBoundrary function, but takes incident angle into account
     # Returns the TE scattering matrix, the TM scattering matrix and the outgoing transmitted angle
 
-    # Handling total internal reflection
-    θ2 = 0
-    if ((abs(n1) > abs(n2)) && (abs((sin(θ1) * n1 / n2)) > 1))
-        θ2 = asin(0im + sin(θ1) * n1 / n2)
-    else
-        θ2 = asin(sin(θ1) * n1 / n2)
-    end
+    θ2 = asin(0im + sin(θ1) * n1 / n2)
 
-    ten1 = n1 * cos(θ1)
-    ten2 = n2 * cos(θ2)
+    r_te_12 = (n1 * cos(θ1) - n2 * cos(θ2)) / (n1 * cos(θ1) + n2 * cos(θ2))
+    r_te_21 = (n2 * cos(θ2) - n1 * cos(θ1)) / (n2 * cos(θ2) + n1 * cos(θ1))
 
-    tmn1 = n1 * sec(θ1)
-    tmn2 = n2 * sec(θ2)
-    tma = cos(θ1) / cos(θ2)
+    r_tm_12 = (n1 * sec(θ1) - n2 * sec(θ2)) / (n1 * sec(θ1) + n2 * sec(θ2))
+    r_tm_21 = (n2 * sec(θ2) - n1 * sec(θ1)) / (n2 * sec(θ2) + n1 * sec(θ1))
 
-    Ste = FresnellBoundrary(ten1, ten2)
-    Stm = FresnellBoundrary(tmn1, tmn2)
-    Stm[1, 1] *= tma
-    Stm[2, 2] /= tma
+    t_te_12 = 1 + r_te_12
+    t_te_21 = 1 + r_te_21
+
+    t_tm_12 = (1 + r_tm_12) * cos(θ1) / cos(θ2)
+    t_tm_21 = (1 + r_tm_21) * cos(θ2) / cos(θ1)
+
+
+    Ste = [
+        t_te_12 r_te_21;
+        r_te_12 t_te_21
+    ]
+    Stm = [
+        t_tm_12 r_tm_21;
+        r_tm_12 t_tm_21
+    ]
 
     return Ste, Stm, θ2
 end
@@ -74,8 +76,8 @@ function Grating(n_spechial::Number, n_normal::Number, d_spechial::Real, d_norma
     n_s_te, n_s_tm, θ2 = FresnellBoundrary(n_normal, n_spechial, θ1)
     s_n_te, s_n_tm, _  = FresnellBoundrary(n_spechial, n_normal, θ2)
 
-    n_b = FresnellSlab(n_normal, k_0, d_normal / cos(θ1))
-    s_b = FresnellSlab(n_spechial, k_0, d_spechial / cos(θ2))
+    n_b = FresnellSlab(n_normal, k_0, d_normal * cos(θ1))
+    s_b = FresnellSlab(n_spechial, k_0, d_spechial * cos(θ2))
 
     cell_te = CascadeScattering([n_s_te, s_b, s_n_te, n_b])
     cell_tm = CascadeScattering([n_s_tm, s_b, s_n_tm, n_b])

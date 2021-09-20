@@ -1,15 +1,8 @@
 module utilities
 
-export c_0
-
-function Base.show(io::IO, num::Complex)
-    # A simple overloading of the default complex number printing for polar coordinates
-    show(io, abs(num))
-    write(io, "ℯ^{")
-    show(io, angle(num) / π)
-    write(io, "π}")
-end
+export c_0, ϵ_0
 
 c_0 = 299792458
+ϵ_0 = 8.854187812813e-12
 
 end # utilities

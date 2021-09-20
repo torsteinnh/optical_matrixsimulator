@@ -8,6 +8,7 @@ using LinearAlgebra
 function StoM(S::Matrix{T})::Matrix{<:Number} where T <: Number
     # Converts a 2x2 scattering matrix to a transfer matrix
     # See Saleh & Teich 3.ed eq.7.1-6
+    # Verified manually
     @assert(size(S) == (2, 2))
     @inbounds begin
         t12 = S[1, 1]
@@ -25,6 +26,7 @@ end
 function MtoS(M::Matrix{T})::Matrix{<:Number} where T <: Number
     # Converts a 2x2 transfer matrix to a scattering matrix
     # See Saleh & Teich 3.ed eq.7.1-5
+    # Verified by tests as inverfse of StoM
     @assert(size(M) == (2, 2))
     @inbounds begin
         A = M[1, 1]
