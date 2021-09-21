@@ -65,9 +65,9 @@ function Grating(n_spechial::Number, n_normal::Number, d_spechial::Real, d_norma
     # A utility for creating the scattering matrix of a periodic grating
 
     border_normal_spechial = FresnellBoundrary(n_normal, n_spechial)
-    bulk_spechial = FresnellSlab(n_spechial, k_0, d_spechial)
+    bulk_spechial = FresnellSlab(n_spechial, k_0, d_spechial, 0)
     border_spechial_normal = FresnellBoundrary(n_spechial, n_normal)
-    bulk_normal = FresnellSlab(n_normal, k_0, d_normal)
+    bulk_normal = FresnellSlab(n_normal, k_0, d_normal, 0)
 
     cell = CascadeScattering([border_normal_spechial, bulk_spechial, border_spechial_normal, bulk_normal])
     Repeating(cell, layers)
@@ -81,8 +81,8 @@ function Grating(n_spechial::Number, n_normal::Number, d_spechial::Real, d_norma
     n_s_te, n_s_tm, θ2 = FresnellBoundrary(n_normal, n_spechial, θ1)
     s_n_te, s_n_tm, _  = FresnellBoundrary(n_spechial, n_normal, θ2)
 
-    n_b = FresnellSlab(n_normal, k_0, d_normal * cos(θ1))
-    s_b = FresnellSlab(n_spechial, k_0, d_spechial * cos(θ2))
+    n_b = FresnellSlab(n_normal, k_0, d_normal, θ1)
+    s_b = FresnellSlab(n_spechial, k_0, d_spechial, θ2)
 
     cell_te = CascadeScattering([n_s_te, s_b, s_n_te, n_b])
     cell_tm = CascadeScattering([n_s_tm, s_b, s_n_tm, n_b])
@@ -103,7 +103,7 @@ function ContinousBorder(n_from::Number, n_to::Number, d::Real, k_0::Number, ste
         n2 = n1 + n_stepp
 
         components[2 * i - 1] = FresnellBoundrary(n1, n2)
-        components[2 * i] = FresnellSlab(n2, k_0, d_stepp)
+        components[2 * i] = FresnellSlab(n2, k_0, d_stepp, 0)
     end
 
     CascadeScattering(components)

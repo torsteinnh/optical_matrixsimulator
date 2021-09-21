@@ -36,12 +36,12 @@ using .simulator.fresnelltools
     @testset "FresnellSlabTest" begin
       for _ in 1:100
         length = rand() * 10
-        slab = FresnellSlab(1, 1, length)
+        slab = FresnellSlab(1, 1, length, 0)
 
         @test slab ≈ ℯ^(- length * 1e-6) .* [ℯ^(- length * 1im) 0; 0 ℯ^(- length * 1im)]
       end
 
-      @test FresnellSlab(1, 2, 0) == [1 0; 0 1]
+      @test FresnellSlab(1, 2, 0, 0) == [1 0; 0 1]
     end
 
 end

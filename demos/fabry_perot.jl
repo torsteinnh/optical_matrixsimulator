@@ -19,7 +19,7 @@ mirror2 = [
     mirror2_r     1 - mirror2_r
 ]
 
-gap(ν) = FresnellSlab(1, 2*π*ν/c_0, distance)
+gap(ν) = FresnellSlab(1, 2*π*ν/c_0, distance, 0)
 
 transmittance(ν) = CascadeScattering([mirror1, gap(ν), mirror2])[1, 1]
 golden(ν) = (1 - mirror1_r) * (1 - mirror2_r) * ℯ^(-im * distance * 2*π*ν / c_0) / (1 - mirror1_r * mirror2_r * ℯ^(-2im * distance * 2*π*ν / c_0))
