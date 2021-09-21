@@ -27,18 +27,7 @@ function MtoS(M::Matrix{T})::Matrix{<:Number} where T <: Number
     # Converts a 2x2 transfer matrix to a scattering matrix
     # See Saleh & Teich 3.ed eq.7.1-5
     # Verified by tests as inverfse of StoM
-    @assert(size(M) == (2, 2))
-    @inbounds begin
-        A = M[1, 1]
-        B = M[1, 2]
-        C = M[2, 1]
-        D = M[2, 2]
-    end
-        S = [
-        A*D - B*C B;
-        -C        1
-    ]
-    (1/D) .* S
+    StoM(M)
 end
 
 
@@ -48,7 +37,8 @@ function CascadeScattering(layers::Vector)::Matrix{Number}
     accumulated = I
 
     for S in view(layers, length(layers):-1:1)
-        accumulated *= StoM(S)
+        M = StoM(S)
+        accumulated *= M
     end
 
     MtoS(accumulated)
