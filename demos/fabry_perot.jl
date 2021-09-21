@@ -1,6 +1,6 @@
 using Plots
 include("../src/utilities.jl")
-using .utilities
+using simulator.utilities
 
 include("../src/simulator.jl")
 using simulator.matrixcore

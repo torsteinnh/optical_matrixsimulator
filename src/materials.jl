@@ -14,7 +14,7 @@ function LoadMaterial(path)
     n_real = LinearInterpolation(n_data[1], n_data[2])
     n_complex = LinearInterpolation(k_data[1], k_data[2])
 
-    n_total(λ) = n_real(λ) + n_complex(λ) * 1im
+    n_total(λ) = n_real(λ) - abs(n_complex(λ)) * 1im
     n_total
 end
 

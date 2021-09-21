@@ -46,14 +46,19 @@ function FresnellBoundrary(n1::Number, n2::Number, θ1::Number)::Tuple{Matrix{Nu
     return Ste, Stm, θ2
 end
 
-function FresnellSlab(n::Number, k_0::Number, d::Number)::Matrix{Number}
+function FresnellSlab(n::Number, k_0::Number, d::Number, θ::Number)::Matrix{Number}
     # Equation from Saleh & Teich 3.ed. eq.7.1-4
-    delay = ℯ^(-1im * n * k_0 * d)
-    dampening = ℯ^(- d * 1e-6)
-    dampening .* [
+    delay = ℯ^(-1im * n * k_0 * d * cos(θ))
+    S = [
         delay 0;
         0     delay
     ]
+
+    if abs(S[1]) < 1e-5
+        return [1e-5 + 1im * imag(delay) 0; 0 1e-5 + 1im * imag(delay)]
+    else
+        return S
+    end
 end
 
 function Grating(n_spechial::Number, n_normal::Number, d_spechial::Real, d_normal::Real, layers::Int, k_0::Number)::Matrix{Number}
