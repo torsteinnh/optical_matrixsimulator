@@ -27,9 +27,13 @@ function β_plasmone(n1, n2, k_0)
 end
 
 function θ_plasmone(ni, n1, n2, k_0)
-   β = real(β_plasmone(n1, n2, k_0))
-   ki = real(ni) * k_0
-   asin(ki / β)
+    β = real(β_plasmone(n1, n2, k_0))
+    ki = real(ni) * k_0
+
+    if ((ki / β) > 1)
+        return NaN
+    end
+    asin(ki / β)
 end
 
 
