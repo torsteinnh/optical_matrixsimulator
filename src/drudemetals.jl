@@ -5,6 +5,11 @@ using ..utilities
 export σ_drude, n_metal, θ_plasmone
 
 
+function ϵ(n::Number)::Number
+    real(n)^2 - imag(n)^2 + 1im * 2 * real(n) * imag(n)
+end
+
+
 function σ_drude(σ_0, ω, τ)
     # See Saleh & Teich 3.ed eq.8.2-10
 
@@ -21,8 +26,8 @@ end
 function β_plasmone(n1, n2, k_0)
     # See Maier eq. 2.14 and eq. 1.11a and b
 
-    ϵ_1 = ( real(n1)^2 - imag(n1) + 1im * 2 * real(n1) * imag(n1))
-    ϵ_2 = ( real(n2)^2 - imag(n2) + 1im * 2 * real(n2) * imag(n2))
+    ϵ_1 = ϵ(n1)
+    ϵ_2 = ϵ(n2)
     k_0 * √(ϵ_1 * ϵ_2 / (ϵ_1 + ϵ_2))
 end
 
@@ -30,10 +35,10 @@ function θ_plasmone(ni, n1, n2, k_0)
     β = real(β_plasmone(n1, n2, k_0))
     ki = real(ni) * k_0
 
-    if ((ki / β) > 1)
+    if ((β / ki) > 1)
         return NaN
     end
-    asin(ki / β)
+    asin(β / ki)
 end
 
 
