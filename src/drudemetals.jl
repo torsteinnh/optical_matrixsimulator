@@ -2,7 +2,7 @@ module drudemetals
 
 using ..utilities
 
-export σ_drude, n_metal, θ_plasmone
+export θ_plasmone
 
 
 function ϵ(n::Number)::Number

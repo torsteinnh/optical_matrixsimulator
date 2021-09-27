@@ -3,7 +3,7 @@ module materials
 using Interpolations
 using DelimitedFiles
 
-export LoadMaterial
+export LoadMaterial, spesifics
 
 
 function LoadMaterial(path)
@@ -17,6 +17,18 @@ function LoadMaterial(path)
     n_total(λ) = n_real(λ) - abs(n_complex(λ)) * 1im
     n_total
 end
+
+
+module spesifics
+
+import ..LoadMaterial
+
+export Au
+
+
+Au = LoadMaterial("materials/Au.csv")
+
+end # spesifics
 
 
 
