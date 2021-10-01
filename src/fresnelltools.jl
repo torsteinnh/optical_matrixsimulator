@@ -54,11 +54,12 @@ function FresnellSlab(n::Number, k_0::Number, d::Number, θ::Number)::Matrix{Num
         0     delay
     ]
 
-    if abs(S[1]) < 1e-5
-        return [1e-5 + 1im * imag(delay) 0; 0 1e-5 + 1im * imag(delay)]
-    else
-        return S
+    if abs(S[1, 1]) < 1e-5
+        S /= abs(S[1, 1])
+        S *= 1e-5
     end
+
+    S
 end
 
 function Grating(n_spechial::Number, n_normal::Number, d_spechial::Real, d_normal::Real, layers::Int, k_0::Number)::Matrix{Number}
