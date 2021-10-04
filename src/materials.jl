@@ -26,7 +26,8 @@ import ..LoadMaterial
 export Au
 
 
-Au = LoadMaterial("materials/Au.csv")
+Au_estimator = LoadMaterial("materials/Au.csv")
+Au(λ) = Au_estimator(λ)
 
 end # spesifics
 

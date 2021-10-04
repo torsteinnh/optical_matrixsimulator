@@ -2,18 +2,18 @@ using Plots
 plotly()
 
 using simulator.fresnelltools
-using simulator.materials
+using simulator.materials.spesifics
 
 
 θs = 0:1e-3:π/2
-θ = 0.856
+θ = 0.856 + 1e-9im
 λs = 300e-9:1e-9:1200e-9
 λ = 797e-9
 ds = 1e-9:1e-9:100e-9
 d = 53e-9
 
 
-n_gold = LoadMaterial("materials/Au.csv")
+n_gold = Au
 n_fiber = 1.4
 n_air = 1
 
@@ -24,8 +24,8 @@ R_ratio(λ, θ, d) = R_te(λ, θ, d) / R_tm(λ, θ, d)
 
 
 # plot(λs, R_ratio.(λs, θ, d), label="θ=0.856", title="TE Reflection / TM Reflection at d=53nm")
-# plot(θs, R_ratio.(λ, θs, d))
+# plot(θs, (θ) -> (R_ratio.(λ, θ + 1e-9im, d)))
 # plot(ds, R_ratio.(λ, θ, ds))
 
-plot(λs, R_te.(λs, θ, d), label="te", title="Reflection at λ=797nm, d=90nm")
-plot!(λs, R_tm.(λs, θ, d), label="tm")
+# plot(θs, (θ) -> (R_te.(λ, θ + 1e-9im, d)), label="te, θ + 1e-9im", title="Reflection at λ=797nm, d=53nm")
+# plot!(θs, (θ) -> (R_tm.(λ, θ + 1e-9im, d)), label="tm, θ + 1e-9im")
