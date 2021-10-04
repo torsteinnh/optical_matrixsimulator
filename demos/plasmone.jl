@@ -6,7 +6,7 @@ using simulator.materials.spesifics
 
 
 θs = 0:1e-3:π/2
-θ = 0.856 + 1e-9im
+θ = 0.856
 λs = 300e-9:1e-9:1200e-9
 λ = 797e-9
 ds = 1e-9:1e-9:100e-9
@@ -27,5 +27,5 @@ R_ratio(λ, θ, d) = R_te(λ, θ, d) / R_tm(λ, θ, d)
 # plot(θs, (θ) -> (R_ratio.(λ, θ + 1e-9im, d)))
 # plot(ds, R_ratio.(λ, θ, ds))
 
-# plot(θs, (θ) -> (R_te.(λ, θ + 1e-9im, d)), label="te, θ + 1e-9im", title="Reflection at λ=797nm, d=53nm")
-# plot!(θs, (θ) -> (R_tm.(λ, θ + 1e-9im, d)), label="tm, θ + 1e-9im")
+# plot(θs, R_te.(λ, θs, d), label="te, θ + 1e-9im", title="Reflection at λ=797nm, d=53nm")
+# plot!(θs, R_tm.(λ, θs, d), label="tm, θ + 1e-9im")

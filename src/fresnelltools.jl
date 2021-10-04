@@ -113,7 +113,7 @@ end
 function ThreeLayerSystem(n_1::Number, n_bulk, n_3::Number, λ, θ, d)
     interface1_te, interface1_tm, θ2 = FresnellBoundrary(n_1, n_bulk(λ), θ)
     bulk = FresnellSlab(n_bulk(λ), 2*π / λ, d, θ2)
-    interface2_te, interface2_tm, _ = FresnellBoundrary(n_bulk(λ), n_3, θ2)
+    interface2_te, interface2_tm, _ = FresnellBoundrary(n_bulk(λ), n_3, θ2 + 1e-14im)
     te_system = CascadeScattering([interface1_te, bulk, interface2_te])
     tm_system = CascadeScattering([interface1_tm, bulk, interface2_tm])
 
