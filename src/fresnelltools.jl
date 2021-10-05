@@ -19,7 +19,15 @@ function FresnellBoundrary(n1::Number, n2::Number, θ1::Number)::Tuple{Matrix{Nu
     # It is similar to the other FresnellBoundrary function, but takes incident angle into account
     # Returns the TE scattering matrix, the TM scattering matrix and the outgoing transmitted angle
 
-    θ2 = asin(0im + sin(θ1) * n1 / n2)
+    # The imaginary coefficient 1e-14im has no physical reason to exist, and is only added for stability in the program.
+    # It is assumed to be needed because of type instability in the asin function i Julia.
+    # See https://github.com/JuliaLang/julia/issues/24296
+    if ((typeof(n1) <: Complex) & (typeof(n2) <: Real))
+        complex_modifier = 1e-14im
+    else
+        complex_modifier = 0im
+    end
+    θ2 = asin(complex_modifier + sin(θ1) * n1 / n2)
 
     r_te_12 = (n1 * cos(θ1) - n2 * cos(θ2)) / (n1 * cos(θ1) + n2 * cos(θ2))
     r_te_21 = (n2 * cos(θ2) - n1 * cos(θ1)) / (n2 * cos(θ2) + n1 * cos(θ1))
@@ -113,7 +121,7 @@ end
 function ThreeLayerSystem(n_1::Number, n_bulk, n_3::Number, λ, θ, d)
     interface1_te, interface1_tm, θ2 = FresnellBoundrary(n_1, n_bulk(λ), θ)
     bulk = FresnellSlab(n_bulk(λ), 2*π / λ, d, θ2)
-    interface2_te, interface2_tm, _ = FresnellBoundrary(n_bulk(λ), n_3, θ2 + 1e-14im)
+    interface2_te, interface2_tm, _ = FresnellBoundrary(n_bulk(λ), n_3, θ2)
     te_system = CascadeScattering([interface1_te, bulk, interface2_te])
     tm_system = CascadeScattering([interface1_tm, bulk, interface2_tm])
 
