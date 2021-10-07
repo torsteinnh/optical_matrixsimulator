@@ -27,5 +27,5 @@ R_ratio(λ, θ, d) = R_te(λ, θ, d) / R_tm(λ, θ, d)
 # plot(θs, (θ) -> (R_ratio.(λ, θ + 1e-9im, d)))
 # plot(ds, R_ratio.(λ, θ, ds))
 
-# plot(θs, R_te.(λ, θs, d), label="te, θ + 1e-9im", title="Reflection at λ=797nm, d=53nm")
-# plot!(θs, R_tm.(λ, θs, d), label="tm, θ + 1e-9im")
+# plot(θs, R_te.(λ, θs, d), label="te, n_air=1", title="Reflection at λ=797nm, d=53nm")
+# plot!(θs, R_tm.(λ, θs, d), label="tm, n_air=1", xlabel="incident angle", ylabel="reflected power")

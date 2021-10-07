@@ -2,24 +2,24 @@ module drudemetals
 
 using ..utilities
 
-export θ_plasmone
+export θ_plasmone, n_drude
 
 
 function ϵ(n::Number)::Number
     real(n)^2 - imag(n)^2 + 1im * 2 * real(n) * imag(n)
 end
 
-
-function σ_drude(σ_0, ω, τ)
-    # See Saleh & Teich 3.ed eq.8.2-10
-
-    σ_0 / (1 + 1im * ω * τ)
+function n_drude(σ_0, τ, λ)
+    ω = 2 * π * c_0 / λ
+    √ϵ_c_drude(σ_0, τ, ω)
 end
 
-function n_metal(σ, γ, ϵ, ω)::Number
-    # See Saleh & Teich 3.ed eq.8.2-6
 
-    √(ϵ / ϵ_0) * √(1 + σ / (1im * ω * ϵ)) + 1im * γ * c_0 / ω
+function ϵ_c_drude(σ_0, τ, ω)
+    # jsee jsaleh & Teich 3.ed eq.8.2-11
+
+    ω_p = √(σ_0 / (ϵ_0 * τ))
+    ϵ_0 * (1 + ω_p^2 / (-(ω^2) + 1im * ω / τ))
 end
 
 

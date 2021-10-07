@@ -3,6 +3,7 @@ module materials
 using Interpolations
 using DelimitedFiles
 
+
 export LoadMaterial, spesifics
 
 
@@ -22,12 +23,16 @@ end
 module spesifics
 
 import ..LoadMaterial
+using ...drudemetals
 
-export Au
+
+export Au, Au_drude
 
 
 Au_estimator = LoadMaterial("materials/Au.csv")
 Au(λ) = Au_estimator(λ)
+
+Au_drude(λ) = n_drude(44.2e6, 27.3e-15, λ)
 
 end # spesifics
 
