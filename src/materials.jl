@@ -26,13 +26,17 @@ import ..LoadMaterial
 using ...drudemetals
 
 
-export Au, Au_drude
+export Au, Au_drude, Pd
 
 
 Au_estimator = LoadMaterial("materials/Au.csv")
 Au(λ) = Au_estimator(λ)
 
 Au_drude(λ) = n_drude(44.2e6, 27.3e-15, λ)
+
+
+Pd_estimator = LoadMaterial("materials/Pd.csv")
+Pd(λ) = Pd_estimator(λ)
 
 end # spesifics
 
