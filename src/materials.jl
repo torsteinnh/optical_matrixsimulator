@@ -26,7 +26,7 @@ import ..LoadMaterial
 using ...analyticalmaterials
 
 
-export Au, Au_drude, Pd
+export Au, Au_drude, Pd, Ag, SiO2_core_Sellmeier, SiO2_thinfilm_Ciprian
 
 
 Au_estimator = LoadMaterial("materials/Au.csv")
@@ -37,6 +37,23 @@ Au_drude(λ) = n_drude(44.2e6, 27.3e-15, λ)
 
 Pd_estimator = LoadMaterial("materials/Pd.csv")
 Pd(λ) = Pd_estimator(λ)
+
+
+Ag_estimator = LoadMaterial("materials/Ag.csv")
+Ag(λ) = Ag_estimator(λ)
+
+
+# F. Downes eq.1
+# Note that small wavelengths give imaginary refractive index, this gives unphysical  results
+SiO2_core_Sellmeier(λ) = √( 1
+    + 0.6961663*(λ*1e6)^2/((λ*1e6)^2-0.0684043)
+    + 0.4079426*(λ*1e6)^2/((λ*1e6)^2-0.1162414)
+    + 0.8974794*(λ*1e6)^2/((λ*1e6)^2-9.896161) )
+
+# F. Downes eq. 2
+# Note that small wavelengths give imaginary refractive index, this gives unphysical  results
+SiO2_thinfilm_Ciprian(λ) = √( 1 + 1.1336*(λ*1e6)^2/((λ*1e6)^2-9.261e-2) )
+
 
 end # spesifics
 
