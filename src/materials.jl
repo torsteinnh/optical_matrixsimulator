@@ -23,7 +23,7 @@ end
 module spesifics
 
 import ..LoadMaterial
-using ...drudemetals
+using ...analyticalmaterials
 
 
 export Au, Au_drude, Pd

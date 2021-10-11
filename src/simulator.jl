@@ -1,9 +1,9 @@
 module simulator
 
-export matrixcore, fresnelltools, drudemetals, cmtgratings, utilities, materials
+export matrixcore, fresnelltools, analyticalmaterials, cmtgratings, utilities, materials
 
 include("utilities.jl")
-include("drudemetals.jl")
+include("analyticalmaterials.jl")
 include("materials.jl")
 include("matrixcore.jl")
 include("fresnelltools.jl")
