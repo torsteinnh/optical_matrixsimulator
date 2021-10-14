@@ -4,7 +4,7 @@ using LinearAlgebra
 
 using ..matrixcore
 
-export FresnellBoundrary, FresnellSlab, Grating, ContinousBorder, ThreeLayerSystem
+export FresnellBoundrary, FresnellSlab, Grating, ContinousBorder, ThreeLayerSystem, Interrogator
 
 
 function FresnellBoundrary(n1::Number, n2::Number)::Matrix{Number}
@@ -126,6 +126,60 @@ function ThreeLayerSystem(n_1::Number, n_bulk, n_3::Number, λ, θ, d)
     tm_system = CascadeScattering([interface1_tm, bulk, interface2_tm])
 
     te_system, tm_system
+end
+
+function Interrogator(layers::Vector{Function}, distances::Vector{Float64}, step::Float64)::Tuple{Vector{Float64}, Vector{Number}}
+    # A small utility providing a default lambda for the Interrogator tool
+    Power(Up, Um) = abs(Up + Um)^2
+    Interrogator(layers, distances, step, Power)
+end
+
+function Interrogator(layers::Vector{Function}, distances::Vector{Float64}, step::Float64, expression::Function)::Tuple{Vector{Float64}, Vector{Number}}
+    # A tool for inspecting the field inside a multilayer system
+
+    total_system = Array{Matrix{Number}}(undef, length(layers))
+    for i in 1:1:length(layers)
+        total_system[i] = layers[i](distances[i])
+    end
+    U_plus = 1
+    U_minus = (CascadeScattering(total_system) * [U_plus, 0])[2]
+
+    maxlen = ceil(Int, length(distances) + sum(distances) / step) * 2
+    d_values = Vector{Number}(undef, maxlen)
+    u_values = Vector{Number}(undef, maxlen)
+
+    d_values[1] = 0.0
+    u_values[1] = expression(U_plus, U_minus)
+
+    m_partial = I
+    d_accumulated = 0
+    i = 1
+    for (layer, distance) in zip(layers, distances)
+        m_partial = layer(step)
+        for _ in  0:step:distance
+            i += 1
+            d_accumulated += step
+            (U_plus, U_minus) = m_partial * [U_plus, U_minus]
+            
+            measure = expression(U_plus, U_minus)
+            d_values[i] = d_accumulated
+            u_values[i] = measure
+        end
+        
+        d_rest = distance % step
+        if d_rest != 0
+            m_partial = layer(d_rest)
+            i += 1
+            d_accumulated += d_rest
+            (U_plus, U_minus) = m_partial * [U_plus, U_minus]
+            
+            measure = expression(U_plus, U_minus)
+            d_values[i] = d_accumulated
+            u_values[i] = measure
+        end
+    end
+
+    u_values[1:i], d_values[1:i]
 end
 
 
