@@ -9,7 +9,7 @@ using simulator.matrixcore
 θs = 0:1e-3:π/2
 θ = 0.806
 λs = 350e-9:1e-9:1800e-9
-λ = 800e-9
+λ = 1357e-9
 
 d_ags = 10e-9:1e-9:200e-9
 d_ag = 50e-9
@@ -56,7 +56,8 @@ function structure_inside(λ, θ, d_ag, d_si, d_pd)
     bulk_air(d) = FresnellSlab(1, 2*π/λ, d, θ_air)
 
     u_values, d_values = Interrogator([bulk_fiber, interface_fiber_ag_f, bulk_ag, interface_ag_si_f, bulk_si, interface_si_pd_f, bulk_pd, interface_pd_air_f, bulk_air],
-    [10e-9, 0, d_ag, 0, d_si, 0, d_pd, 0, 10e-9], 1e-10)
+    [10e-6, 0, d_ag, 0, d_si, 0, d_pd, 0, 10e-9], 1e-10,
+    (Up, Un) -> real(Un))
 
     u_values, d_values
 end
@@ -78,4 +79,4 @@ interrogated_d = structure_inside(λ, θ, d_ag, d_si, d_pd)[2]
 # plot(λs, R_te.(λs, θ, d_ag, d_si, d_pd), label="te, Pd-structure, Different Pd", title="Reflection at silica-palladium-air", legend=:bottomright)
 # plot!(λs, R_tm.(λs, θ, d_ag, d_si, d_pd), label="tm, Pd-structure, Different Pd", xlabel="wavelength", ylabel="reflected power")
 
-# plot(interrogated_d, interrogated_v)
+# plot(interrogated_d, interrogated_v, label="abs", title="Sum of fields at plasmone conditions")

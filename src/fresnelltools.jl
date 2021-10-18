@@ -141,26 +141,31 @@ function Interrogator(layers::Vector{Function}, distances::Vector{Float64}, step
     for i in 1:1:length(layers)
         total_system[i] = layers[i](distances[i])
     end
-    U_plus = 1
-    U_minus = (CascadeScattering(total_system) * [U_plus, 0])[2]
+    U0_plus = 1
+    U0_minus = (CascadeScattering(total_system) * [U0_plus, 0])[2]
 
-    maxlen = ceil(Int, length(distances) + sum(distances) / step) * 2
+    maxlen = ceil(Int, length(distances) * 2 + sum(distances) / step)
     d_values = Vector{Number}(undef, maxlen)
     u_values = Vector{Number}(undef, maxlen)
 
     d_values[1] = 0.0
-    u_values[1] = expression(U_plus, U_minus)
+    u_values[1] = expression(U0_plus, U0_minus)
 
+    m_accumulated = I
+    m_local = I
     m_partial = I
-    d_accumulated = 0
+    d_accumulated = 0.0
     i = 1
     for (layer, distance) in zip(layers, distances)
-        m_partial = layer(step)
+        m_local = m_accumulated
+
+        m_partial = StoM(layer(step))
         for _ in  0:step:distance
             i += 1
             d_accumulated += step
-            (U_plus, U_minus) = m_partial * [U_plus, U_minus]
-            
+            m_local = m_partial * m_local
+
+            U_plus, U_minus = m_local * [U0_plus, U0_minus]
             measure = expression(U_plus, U_minus)
             d_values[i] = d_accumulated
             u_values[i] = measure
@@ -168,15 +173,19 @@ function Interrogator(layers::Vector{Function}, distances::Vector{Float64}, step
         
         d_rest = distance % step
         if d_rest != 0
-            m_partial = layer(d_rest)
+            m_partial = StoM(layer(d_rest))
             i += 1
             d_accumulated += d_rest
-            (U_plus, U_minus) = m_partial * [U_plus, U_minus]
+            m_local = m_partial * m_local
+
+            (U_plus, U_minus) = m_local * [U0_plus, U0_minus]
             
             measure = expression(U_plus, U_minus)
             d_values[i] = d_accumulated
             u_values[i] = measure
         end
+
+        m_accumulated = StoM(layer(distance)) * m_accumulated
     end
 
     u_values[1:i], d_values[1:i]

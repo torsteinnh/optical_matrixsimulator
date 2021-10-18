@@ -1,8 +1,6 @@
 using Plots
-include("../src/utilities.jl")
-using simulator.utilities
 
-include("../src/simulator.jl")
+using simulator.utilities
 using simulator.matrixcore
 using simulator.fresnelltools
 
