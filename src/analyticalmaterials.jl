@@ -2,7 +2,7 @@ module analyticalmaterials
 
 using ..utilities
 
-export θ_plasmone, n_drude, n_MaxwellGarnett
+export θ_plasmone, n_drude, n_MaxwellGarnett, θ_grating_coupling
 
 
 function ϵ(n::Number)::Number
@@ -43,6 +43,16 @@ function θ_plasmone(ni::Number, n1::Number, n2::Number, k_0::Number)::Number
         return NaN
     end
     asin(β / ki)
+end
+
+
+function θ_grating_coupling(λ, neff_core, n_cladding, Λ)
+    asin(((λ * 2 / Λ) - neff_core) / n_cladding)
+end
+
+function θ_grating_coupling(λ, n_core)
+    # A default for the grating in question
+   θ_grating_coupling(λ, 1.4676, n_core, 1073.81e-9)
 end
 
 

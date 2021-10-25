@@ -172,7 +172,7 @@ function Interrogator(layers::Vector{Function}, distances::Vector{Float64}, step
         end
         
         d_rest = distance % step
-        if d_rest != 0
+        if d_rest > (step / 100)
             m_partial = StoM(layer(d_rest))
             i += 1
             d_accumulated += d_rest

@@ -36,7 +36,7 @@ function Inside(λ, θ, d)
     border_2_te_f(d) = border_2_te
     border_2_tm_f(d) = border_2_tm
 
-    search = (Up, Un) -> abs(Up)^2
+    search = (Up, Un) -> abs(Up + Un)^2
 
     u_te, d_te = Interrogator(
         [bulk_fiber, border_1_te_f, bulk_gold, border_2_te_f, bulk_air],
@@ -66,8 +66,9 @@ ds, u_te, u_tm = Inside(650e-9, θ, d)
 ds = ds .* 1e9
 _, u_tep, u_tmp = Inside(786e-9, θ, d)
 
-plot(ds, u_te, label="te normal", title="Field inside godl thin film",
-    xlabel="wavelength in nm", ylabel="forward propagating power")
+plot(ds, u_te, label="te normal", title="Gold thin film, power distribution",
+    xlabel="distance in nm", ylabel="all propagating power",
+    legend=:topleft)
 plot!(ds, u_tm, label="tm normal")
 plot!(ds, u_tep, label="te plasmone")
 plot!(ds, u_tmp, label="tm plasmone")
