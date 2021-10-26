@@ -6,27 +6,27 @@ using simulator.materials.spesifics
 
 save = false
 
-n_1 = l -> 1.48
-n_2 = Ag
-n_3 = l -> 1.05
-n_4 = l -> 1.05
+n_1 = SiO2_core_Sellmeier
+n_2 = Au
+n_3 = SiO2_thinfilm_Ciprian
+n_4 = l -> 1
 n_5 = l -> 1
 
 d_1 = 10e-9
-d_2 = 10e-9
-d_3 = 10e-9
-d_4 = 10e-9
+d_2 = 50e-9
+d_3 = 1e-6
+d_4 = 5e-9
 d_5 = 10e-9
 
-λ = 800e-9
-θ1 = 43.5 * π/180
+λ = 784e-9
+θd = 42.4
 
-step = 1e-10
+step = 1e-11
 expression_total(Up, Un) = abs(Up + Un)^2
 expression_forward(Up, _) = abs(Up)^2
 expression_backward(_, Un) = abs(Un)^2
 
-description = "silver-silica structure"
+description = "silver silica 4"
 θs = 0:1e-3:π/2
 λs = 400e-9:1e-9:1800e-9
 
@@ -40,6 +40,7 @@ if save
 else
     plotly()
 end
+θ1 = θd * π/180
 
 function system_slabs(θ1, λ, select)
     bulk_1 = FresnellSlab(n_1(λ), 2*π/λ, d_1, θ1)
@@ -111,7 +112,7 @@ total_u_te, total_d_te, total_u_tm, total_d_tm = inside_slabs(expression_total)
 forward_u_te, forward_d_te, forward_u_tm, forward_d_tm = inside_slabs(expression_forward)
 backward_u_te, backward_d_te, backward_u_tm, backward_d_tm = inside_slabs(expression_backward)
 
-fig_inside = plot(title="Field inside " * description * "\nλ = $λ, θ = $(θ1*180/π)", legend=:topleft, xlabel="distance in nm", ylabel="power")
+fig_inside = plot(title="Field inside " * description * "\nλ = $λ, θ = $θd", legend=:topleft, xlabel="distance in nm", ylabel="power")
 plot!(fig_inside, total_d_te .* 1e9, total_u_te, label="total te")
 plot!(fig_inside, total_d_tm .* 1e9, total_u_tm, label="total tm")
 plot!(fig_inside, forward_d_te .* 1e9, forward_u_te, label="forward te")
@@ -122,7 +123,7 @@ display(fig_inside)
 if save savefig(fig_inside, fig_path * "inside_" * fig_token * ".pdf") end
 
 
-fig_angles = plot(title="By angle " * description * "\nλ = $λ", legend=:bottomright, xlabel="angle in degrees", ylabel="power")
+fig_angles = plot(title="By angle " * description * "\nλ = $λ", legend=:left, xlabel="angle in degrees", ylabel="power")
 plot!(fig_angles, θs .* (180/π), system_slabs.(θs, λ, 1), label="te reflection")
 plot!(fig_angles, θs .* (180/π), system_slabs.(θs, λ, 2), label="tm reflection")
 # plot!(fig_angles, θs .* (180/π), system_slabs.(θs, λ, 3), label="te transmission")
@@ -130,7 +131,7 @@ plot!(fig_angles, θs .* (180/π), system_slabs.(θs, λ, 2), label="tm reflecti
 display(fig_angles)
 if save savefig(fig_angles, fig_path * "angles_" * fig_token * ".pdf") end
 
-fig_wavelengths = plot(title="By wavelength " * description * "\nθ = $(θ1*180/π)", legend=:bottomright, xlabel="wavelength in nanometer", ylabel="power")
+fig_wavelengths = plot(title="By wavelength " * description * "\nθ = $θd", legend=:right, xlabel="wavelength in nanometer", ylabel="power")
 plot!(fig_wavelengths, λs .* 1e9, system_slabs.(θ1, λs, 1), label="te reflection")
 plot!(fig_wavelengths, λs .* 1e9, system_slabs.(θ1, λs, 2), label="tm reflection")
 # plot!(fig_wavelengths, λs .* 1e9, system_slabs.(θ1, λs, 3), label="te transmission")

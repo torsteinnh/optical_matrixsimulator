@@ -62,13 +62,13 @@ end
 # plot!(λs, R_tm.(λs, θ, d), label="tm", xlabel="wavelength", ylabel="reflected power")
 
 
-ds, u_te, u_tm = Inside(650e-9, θ, d)
-ds = ds .* 1e9
-_, u_tep, u_tmp = Inside(786e-9, θ, d)
-
-plot(ds, u_te, label="te normal", title="Gold thin film, power distribution",
-    xlabel="distance in nm", ylabel="all propagating power",
-    legend=:topleft)
-plot!(ds, u_tm, label="tm normal")
-plot!(ds, u_tep, label="te plasmone")
-plot!(ds, u_tmp, label="tm plasmone")
+# ds, u_te, u_tm = Inside(650e-9, θ, d)
+# ds = ds .* 1e9
+# _, u_tep, u_tmp = Inside(786e-9, θ, d)
+# 
+# plot(ds, u_te, label="te normal", title="Gold thin film, power distribution",
+#     xlabel="distance in nm", ylabel="all propagating power",
+#     legend=:topleft)
+# plot!(ds, u_tm, label="tm normal")
+# plot!(ds, u_tep, label="te plasmone")
+# plot!(ds, u_tmp, label="tm plasmone")
