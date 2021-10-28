@@ -160,10 +160,16 @@ function Interrogator(layers::Vector{Function}, distances::Vector{Float64}, step
         m_local = m_accumulated
 
         m_partial = StoM(layer(step))
-        for _ in  0:step:distance
+        j = 0
+        for _ in 0:step:distance
             i += 1
+            j += 1
             d_accumulated += step
-            m_local = m_partial * m_local
+            if (j % 1000) == 0
+                m_local = StoM(layer(step * j)) * m_accumulated
+            else
+                m_local = m_partial * m_local
+            end
 
             U_plus, U_minus = m_local * [U0_plus, U0_minus]
             measure = expression(U_plus, U_minus)
