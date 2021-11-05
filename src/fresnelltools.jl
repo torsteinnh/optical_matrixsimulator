@@ -4,7 +4,7 @@ using LinearAlgebra
 
 using ..matrixcore
 
-export FresnellBoundrary, FresnellSlab, Grating, ContinousBorder, ThreeLayerSystem, Interrogator
+export FresnellBoundrary, FresnellSlab, Grating, ContinousBorder, ThreeLayerSystem, Interrogator, BorderInterrogator
 
 
 function FresnellBoundrary(n1::Number, n2::Number)::Matrix{Number}
@@ -195,6 +195,37 @@ function Interrogator(layers::Vector{Function}, distances::Vector{Float64}, step
     end
 
     u_values[1:i], d_values[1:i]
+end
+
+function BorderInterrogator(layers::Vector{Matrix{Number}}, distances::Vector{Float64}, expression::Function)::Tuple{Vector{Number}, Vector{Number}, Vector{Real}}
+    # A tool for calculating the field at the borders in a structure independent of the Interrogator function
+    # Returns the forward propagating fields, the backward propagating fields and the distances
+
+    U0p = 1
+    U0n = (CascadeScattering(layers) * [U0p, 0])[2]
+
+    Upv = Vector{Number}()
+    Unv = Vector{Number}()
+    Dv = Vector{Float64}()
+
+    push!(Upv, U0p)
+    push!(Unv, U0n)
+    push!(Dv, 0.0)
+
+    accumulated_m = I
+    accumulated_d = 0.0
+    for (layer, distance) in zip(layers, distances)
+        accumulated_m = StoM(layer) * accumulated_m
+        accumulated_d += distance
+
+        Up, Un = accumulated_m * [U0p, U0n]
+
+        push!(Upv, Up)
+        push!(Unv, Un)
+        push!(Dv, accumulated_d)
+    end
+
+    return expression.(Upv), expression.(Unv), Dv
 end
 
 

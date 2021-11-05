@@ -7,24 +7,25 @@ using simulator.materials.spesifics
 save = false
 
 n_1 = l -> 1.5
-n_2 = l -> 1.5
-n_3 = l -> 1.5
-n_4 = l -> 1.3
-n_5 = l -> 1.3
+n_2 = Au
+n_3 = l -> 1
+n_4 = l -> 1
+n_5 = l -> 1
 
-d_1 = 10e-9
+d_1 = 30e-9
 d_2 = 50e-9
-d_3 = 1e-9
+d_3 = 10e-9
 d_4 = 10e-9
-d_5 = 12e-6
+d_5 = 10e-9
 
-λ = 784e-9
-θd = 65
+λ = 1200e-9
+θd = 42.23
 
-step = 1e-9
+step = 1e-10
 expression_total(Up, Un) = abs(Up + Un)^2
 expression_forward(Up, _) = abs(Up)^2
 expression_backward(_, Un) = abs(Un)^2
+expression_borders(u) = abs(u)^2
 
 description = "silver silica 4"
 θs = 0:1e-3:π/2
@@ -104,21 +105,36 @@ function inside_slabs(expression)
         expression
     )
 
-    u_te, d_te, u_tm, d_tm
+    u_bp_te, u_bn_te, d_b_te = BorderInterrogator(
+        [bulk_1(d_1), i_1_2_te, bulk_2(d_2), i_2_3_te, bulk_3(d_3), i_3_4_te, bulk_4(d_4), i_4_5_te, bulk_5(d_5)],
+        [d_1, 0, d_2, 0, d_3, 0, d_4, 0, d_5],
+        expression_borders
+    )
+    u_bp_tm, u_bn_tm, d_b_tm = BorderInterrogator(
+        [bulk_1(d_1), i_1_2_tm, bulk_2(d_2), i_2_3_tm, bulk_3(d_3), i_3_4_tm, bulk_4(d_4), i_4_5_tm, bulk_5(d_5)],
+        [d_1, 0, d_2, 0, d_3, 0, d_4, 0, d_5],
+        expression_borders
+    )
+
+    u_te, d_te, u_tm, d_tm, u_bp_te, u_bn_te, d_b_te, u_bp_tm, u_bn_tm, d_b_tm
 end
 
 
-total_u_te, total_d_te, total_u_tm, total_d_tm = inside_slabs(expression_total)
-forward_u_te, forward_d_te, forward_u_tm, forward_d_tm = inside_slabs(expression_forward)
-backward_u_te, backward_d_te, backward_u_tm, backward_d_tm = inside_slabs(expression_backward)
+total_u_te, total_d_te, total_u_tm, total_d_tm, u_bp_te, u_bn_te, d_b_te, u_bp_tm, u_bn_tm, d_b_tm = inside_slabs(expression_total)
+forward_u_te, forward_d_te, forward_u_tm, forward_d_tm, _, _, _, _, _, _ = inside_slabs(expression_forward)
+backward_u_te, backward_d_te, backward_u_tm, backward_d_tm, _, _, _, _, _, _ = inside_slabs(expression_backward)
 
 fig_inside = plot(title="Field inside " * description * "\nλ = $λ, θ = $θd", legend=:topleft, xlabel="distance in nm", ylabel="power", ticks=:native)
 plot!(fig_inside, total_d_te .* 1e9, total_u_te, label="total te")
 plot!(fig_inside, total_d_tm .* 1e9, total_u_tm, label="total tm")
 plot!(fig_inside, forward_d_te .* 1e9, forward_u_te, label="forward te")
+plot!(fig_inside, d_b_te .* 1e9, u_bp_te, seriestype =:scatter, label="forward te borders")
 plot!(fig_inside, forward_d_tm .* 1e9, forward_u_tm, label="forward tm")
+plot!(fig_inside, d_b_tm .* 1e9, u_bp_tm, seriestype =:scatter, label="forward tm borders")
 plot!(fig_inside, backward_d_te .* 1e9, backward_u_te, label="backward te")
+plot!(fig_inside, d_b_te .* 1e9, u_bn_te, seriestype =:scatter, label="backward te borders")
 plot!(fig_inside, backward_d_tm .* 1e9, backward_u_tm, label="backward tm")
+plot!(fig_inside, d_b_tm .* 1e9, u_bn_tm, seriestype =:scatter, label="backward tm borders")
 display(fig_inside)
 if save savefig(fig_inside, fig_path * "inside_" * fig_token * ".pdf") end
 
