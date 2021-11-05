@@ -52,7 +52,7 @@ end
 
 function θ_grating_coupling(λ, n_core)
     # A default for the grating in question
-   θ_grating_coupling(λ, 1.4676, n_core, 1073.81e-9)
+    θ_grating_coupling(λ, 1.4676, n_core, 1073.81e-9)
 end
 
 

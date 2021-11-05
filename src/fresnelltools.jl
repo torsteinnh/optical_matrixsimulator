@@ -164,7 +164,7 @@ function Interrogator(layers::Vector{Function}, distances::Vector{Float64}, step
         for _ in 0:step:distance
             i += 1
             j += 1
-            d_accumulated += step
+            d_accumulated += distance > step ? step : distance
             if (j % 1000) == 0
                 m_local = StoM(layer(step * j)) * m_accumulated
             else
@@ -178,7 +178,7 @@ function Interrogator(layers::Vector{Function}, distances::Vector{Float64}, step
         end
         
         d_rest = distance % step
-        if d_rest > (step / 100)
+        if (d_rest > (step / 1000)) & (step > distance)
             m_partial = StoM(layer(d_rest))
             i += 1
             d_accumulated += d_rest
