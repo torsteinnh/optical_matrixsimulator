@@ -25,7 +25,7 @@ using .simulator.fresnelltools
       # Testing a variety of angles and refractive indices to check that nonexisting borders do no reflect.
       for _ in 1:100
         θ1 = rand() * π / 2
-        n = rand() * 2
+        n = rand(ComplexF64) * 2
         te, tm, θ2 = FresnellBoundrary(n, n, θ1)
 
         @test θ1 ≈ θ2

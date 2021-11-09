@@ -26,13 +26,11 @@ import ..LoadMaterial
 using ...analyticalmaterials
 
 
-export Au, Au_drude, Pd, Ag, SiO2_core_Sellmeier, SiO2_thinfilm_Ciprian
+export Au, Pd, Ag, SiO2_core_Sellmeier, SiO2_thinfilm_Ciprian
 
 
 Au_estimator = LoadMaterial("materials/Au.csv")
 Au(λ) = Au_estimator(λ)
-
-Au_drude(λ) = n_drude(44.2e6, 27.3e-15, λ)
 
 
 Pd_estimator = LoadMaterial("materials/Pd.csv")
