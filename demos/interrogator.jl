@@ -28,7 +28,7 @@ expression_backward(_, Un) = abs(Un)^2
 expression_borders(u) = abs(u)^2
 
 description = "silver silica 4"
-θs = 0:1e-3:π/2
+θds = 0:1e-2:90
 λs = 400e-9:1e-9:1800e-9
 
 fig_path = "../rapport/figures/interrogator_example/"
@@ -42,6 +42,7 @@ else
     plotly()
 end
 θ1 = θd * π/180
+θs = θds .* (π/180)
 
 function system_slabs(θ1, λ, select)
     bulk_1 = FresnellSlab(n_1(λ), 2*π/λ, d_1, θ1)
