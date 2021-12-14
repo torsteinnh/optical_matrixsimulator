@@ -6,20 +6,20 @@ using simulator.materials.spesifics
 
 save = false
 
-n_1 = l -> 1.5
-n_2 = Au
+n_1 = SiO2_core_Sellmeier
+n_2 = Pd
 n_3 = l -> 1
 n_4 = l -> 1
 n_5 = l -> 1
 
 d_1 = 30e-9
-d_2 = 50e-9
+d_2 = 60e-9
 d_3 = 10e-9
 d_4 = 10e-9
 d_5 = 10e-9
 
 λ = 1200e-9
-θd = 42.23
+θd = 44.93
 
 step = 1e-10
 expression_total(Up, Un) = abs(Up + Un)^2
@@ -121,9 +121,10 @@ function inside_slabs(expression)
 end
 
 
-total_u_te, total_d_te, total_u_tm, total_d_tm, u_bp_te, u_bn_te, d_b_te, u_bp_tm, u_bn_tm, d_b_tm = inside_slabs(expression_total)
-forward_u_te, forward_d_te, forward_u_tm, forward_d_tm, _, _, _, _, _, _ = inside_slabs(expression_forward)
-backward_u_te, backward_d_te, backward_u_tm, backward_d_tm, _, _, _, _, _, _ = inside_slabs(expression_backward)
+println("\nTiming for inside")
+total_u_te, total_d_te, total_u_tm, total_d_tm, u_bp_te, u_bn_te, d_b_te, u_bp_tm, u_bn_tm, d_b_tm = @time inside_slabs(expression_total)
+forward_u_te, forward_d_te, forward_u_tm, forward_d_tm, _, _, _, _, _, _ = @time inside_slabs(expression_forward)
+backward_u_te, backward_d_te, backward_u_tm, backward_d_tm, _, _, _, _, _, _ = @time inside_slabs(expression_backward)
 
 fig_inside = plot(title="Field inside " * description * "\nλ = $λ, θ = $θd", legend=:topleft, xlabel="distance in nm", ylabel="power", ticks=:native)
 plot!(fig_inside, total_d_te .* 1e9, total_u_te, label="total te")
@@ -140,18 +141,29 @@ display(fig_inside)
 if save savefig(fig_inside, fig_path * "inside_" * fig_token * ".pdf") end
 
 
+println("\nTiming for by angle")
+ter_angles = @time system_slabs.(θs, λ, 1)
+tmr_angles = @time system_slabs.(θs, λ, 2)
+tet_angles = @time system_slabs.(θs, λ, 3)
+tmt_angles = @time system_slabs.(θs, λ, 4)
 fig_angles = plot(title="By angle " * description * "\nλ = $λ", legend=:left, xlabel="angle in degrees", ylabel="power", ticks=:native)
-plot!(fig_angles, θs .* (180/π), system_slabs.(θs, λ, 1), label="te reflection")
-plot!(fig_angles, θs .* (180/π), system_slabs.(θs, λ, 2), label="tm reflection")
-# plot!(fig_angles, θs .* (180/π), system_slabs.(θs, λ, 3), label="te transmission")
-# plot!(fig_angles, θs .* (180/π), system_slabs.(θs, λ, 4), label="tm transmission")
+plot!(fig_angles, θs .* (180/π), ter_angles, label="te reflection")
+plot!(fig_angles, θs .* (180/π), tmr_angles, label="tm reflection")
+# plot!(fig_angles, θs .* (180/π), tet_angles, label="te transmission")
+# plot!(fig_angles, θs .* (180/π), tmt_angles, label="tm transmission")
 display(fig_angles)
 if save savefig(fig_angles, fig_path * "angles_" * fig_token * ".pdf") end
 
+
+println("\nTiming for by wavelength")
+ter_wavelength = @time system_slabs.(θ1, λs, 1)
+tmr_wavelength = @time system_slabs.(θ1, λs, 2)
+tet_wavelength = @time system_slabs.(θ1, λs, 3)
+tmt_wavelength = @time system_slabs.(θ1, λs, 4)
 fig_wavelengths = plot(title="By wavelength " * description * "\nθ = $θd", legend=:right, xlabel="wavelength in nanometer", ylabel="power", ticks=:native)
-plot!(fig_wavelengths, λs .* 1e9, system_slabs.(θ1, λs, 1), label="te reflection")
-plot!(fig_wavelengths, λs .* 1e9, system_slabs.(θ1, λs, 2), label="tm reflection")
-# plot!(fig_wavelengths, λs .* 1e9, system_slabs.(θ1, λs, 3), label="te transmission")
-# plot!(fig_wavelengths, λs .* 1e9, system_slabs.(θ1, λs, 4), label="tm transmission")
+plot!(fig_wavelengths, λs .* 1e9, ter_wavelength, label="te reflection")
+plot!(fig_wavelengths, λs .* 1e9, tmr_wavelength, label="tm reflection")
+# plot!(fig_wavelengths, λs .* 1e9, tet_wavelength, label="te transmission")
+# plot!(fig_wavelengths, λs .* 1e9, tmt_wavelength, label="tm transmission")
 display(fig_wavelengths)
 if save savefig(fig_wavelengths, fig_path * "wavelengths_" * fig_token * ".pdf") end
