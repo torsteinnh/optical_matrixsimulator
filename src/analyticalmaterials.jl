@@ -20,7 +20,7 @@ end
 
 
 function ϵ_c_drude(σ_0::Real, τ::Real, ω::Real)::Number
-    # jsee jsaleh & Teich 3.ed eq.8.2-11
+    # See Saleh & Teich 3.ed eq.8.2-11
 
     ω_p = √(σ_0 / (ϵ_0 * τ))
     ϵ_0 * (1 + ω_p^2 / (-(ω^2) + 1im * ω / τ))

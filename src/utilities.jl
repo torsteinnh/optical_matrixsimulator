@@ -11,7 +11,7 @@ function peak_width(data::Vector{<:Real}, step::T, inverted::Bool)::T where T<:R
         data = maximum(data) .- data
     end
 
-    target = maximum(data) / ℯ
+    target = maximum(data) / 2
 
     previous::Real = 0
     left::UInt = 0
