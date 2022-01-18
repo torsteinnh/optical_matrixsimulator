@@ -2,7 +2,7 @@ module analyticalmaterials
 
 using ..utilities
 
-export θ_plasmone, n_drude, n_MaxwellGarnett, θ_grating_coupling
+export θ_plasmone, n_drude, θ_grating_coupling, ϵ, n
 
 
 function ϵ(n::Number)::Number
@@ -53,16 +53,6 @@ end
 function θ_grating_coupling(λ, n_core)
     # A default for the grating in question
     θ_grating_coupling(λ, 1.4676, n_core, 1073.81e-9)
-end
-
-
-function n_MaxwellGarnett(ϵ_a::Number, ϵ_b::Number, f_A::Real)::Number
-    # Hans Arwin, eq. 2.23
-    # Coated spheres model
-    # f_A is the fill factor
-
-    ϵ_total = ϵ_b * (ϵ_a + 2*ϵ_b + 2*f_A*(ϵ_a - ϵ_b)) / (ϵ_a + 2*ϵ_b - f_A*(ϵ_a - ϵ_b))
-    n(ϵ_total)
 end
 
 

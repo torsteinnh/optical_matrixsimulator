@@ -4,9 +4,9 @@ export matrixcore, fresnelltools, analyticalmaterials, cmtgratings, utilities, m
 
 include("utilities.jl")
 include("analyticalmaterials.jl")
+include("ema.jl")
 include("materials.jl")
 include("matrixcore.jl")
 include("fresnelltools.jl")
-# include("cmtgratings.jl")
 
 end # simulator
