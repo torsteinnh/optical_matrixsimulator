@@ -7,19 +7,19 @@ using simulator.materials.spesifics
 save = false
 
 n_1 = SiO2_core_Sellmeier
-n_2 = Pd
+n_2 = Pd_unloaded
 n_3 = l -> 1
 n_4 = l -> 1
 n_5 = l -> 1
 
 d_1 = 30e-9
-d_2 = 60e-9
+d_2 = 20e-9
 d_3 = 10e-9
 d_4 = 10e-9
 d_5 = 10e-9
 
 λ = 1200e-9
-θd = 44.93
+θd = 80.3
 
 step = 1e-10
 expression_total(Up, Un) = abs(Up + Un)^2
@@ -29,7 +29,7 @@ expression_borders(u) = abs(u)^2
 
 description = "silver silica 4"
 θds = 0:1e-2:90
-λs = 400e-9:1e-9:1800e-9
+λs = 400e-9:1e-9:1500e-9
 
 fig_path = "../rapport/figures/interrogator_example/"
 fig_token = replace(description, " " => "_")
@@ -121,24 +121,24 @@ function inside_slabs(expression)
 end
 
 
-println("\nTiming for inside")
-total_u_te, total_d_te, total_u_tm, total_d_tm, u_bp_te, u_bn_te, d_b_te, u_bp_tm, u_bn_tm, d_b_tm = @time inside_slabs(expression_total)
-forward_u_te, forward_d_te, forward_u_tm, forward_d_tm, _, _, _, _, _, _ = @time inside_slabs(expression_forward)
-backward_u_te, backward_d_te, backward_u_tm, backward_d_tm, _, _, _, _, _, _ = @time inside_slabs(expression_backward)
+# println("\nTiming for inside")
+# total_u_te, total_d_te, total_u_tm, total_d_tm, u_bp_te, u_bn_te, d_b_te, u_bp_tm, u_bn_tm, d_b_tm = @time inside_slabs(expression_total)
+# forward_u_te, forward_d_te, forward_u_tm, forward_d_tm, _, _, _, _, _, _ = @time inside_slabs(expression_forward)
+# backward_u_te, backward_d_te, backward_u_tm, backward_d_tm, _, _, _, _, _, _ = @time inside_slabs(expression_backward)
 
-fig_inside = plot(title="Field inside " * description * "\nλ = $λ, θ = $θd", legend=:topleft, xlabel="distance in nm", ylabel="power", ticks=:native)
-plot!(fig_inside, total_d_te .* 1e9, total_u_te, label="total te")
-plot!(fig_inside, total_d_tm .* 1e9, total_u_tm, label="total tm")
-plot!(fig_inside, forward_d_te .* 1e9, forward_u_te, label="forward te")
-plot!(fig_inside, d_b_te .* 1e9, u_bp_te, seriestype =:scatter, label="forward te borders")
-plot!(fig_inside, forward_d_tm .* 1e9, forward_u_tm, label="forward tm")
-plot!(fig_inside, d_b_tm .* 1e9, u_bp_tm, seriestype =:scatter, label="forward tm borders")
-plot!(fig_inside, backward_d_te .* 1e9, backward_u_te, label="backward te")
-plot!(fig_inside, d_b_te .* 1e9, u_bn_te, seriestype =:scatter, label="backward te borders")
-plot!(fig_inside, backward_d_tm .* 1e9, backward_u_tm, label="backward tm")
-plot!(fig_inside, d_b_tm .* 1e9, u_bn_tm, seriestype =:scatter, label="backward tm borders")
-display(fig_inside)
-if save savefig(fig_inside, fig_path * "inside_" * fig_token * ".pdf") end
+# fig_inside = plot(title="Field inside " * description * "\nλ = $λ, θ = $θd", legend=:topleft, xlabel="distance in nm", ylabel="power", ticks=:native)
+# plot!(fig_inside, total_d_te .* 1e9, total_u_te, label="total te")
+# plot!(fig_inside, total_d_tm .* 1e9, total_u_tm, label="total tm")
+# plot!(fig_inside, forward_d_te .* 1e9, forward_u_te, label="forward te")
+# plot!(fig_inside, d_b_te .* 1e9, u_bp_te, seriestype =:scatter, label="forward te borders")
+# plot!(fig_inside, forward_d_tm .* 1e9, forward_u_tm, label="forward tm")
+# plot!(fig_inside, d_b_tm .* 1e9, u_bp_tm, seriestype =:scatter, label="forward tm borders")
+# plot!(fig_inside, backward_d_te .* 1e9, backward_u_te, label="backward te")
+# plot!(fig_inside, d_b_te .* 1e9, u_bn_te, seriestype =:scatter, label="backward te borders")
+# plot!(fig_inside, backward_d_tm .* 1e9, backward_u_tm, label="backward tm")
+# plot!(fig_inside, d_b_tm .* 1e9, u_bn_tm, seriestype =:scatter, label="backward tm borders")
+# display(fig_inside)
+# if save savefig(fig_inside, fig_path * "inside_" * fig_token * ".pdf") end
 
 
 println("\nTiming for by angle")

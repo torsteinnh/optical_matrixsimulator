@@ -8,7 +8,7 @@ using simulator.matrixcore
 λ = 1200e-9
 
 n1 = 1.5
-nm = Pd(λ)
+nm = Pd_Werner(λ)
 n2 = 1.2
 
 θs = 0.7:1e-4:1

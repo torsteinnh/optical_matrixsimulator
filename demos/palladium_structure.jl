@@ -21,7 +21,7 @@ d_pd = 5e-9
 n_fiber = SiO2_core_Sellmeier
 n_ag = Ag
 n_silicafilm = SiO2_thinfilm_Ciprian
-n_palladium(λ) = Pd(λ) - 0im
+n_palladium(λ) = Pd_Werner(λ) - 0im
 n_air = 1
 
 
