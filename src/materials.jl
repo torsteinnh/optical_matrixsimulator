@@ -43,7 +43,31 @@ import ..LoadMaterial
 using ...analyticalmaterials
 
 
-export Au_Johnson, Au_Werner, Pd_Johnson, Pd_Werner, Pd_Palm_2018, Ag, LiF, SiO2_core_Sellmeier, SiO2_thinfilm_Ciprian, Au_unloaded, Pd014_unloaded, Pd034_unloaded, Pd034_loaded, Pd042_unloaded, Pd042_loaded, Pd052_unloaded, Pd052_loaded, Pd073_unloaded, Pd073_loaded, Pd_unloaded, Pd_loaded
+export Au_Johnson, Au_Werner, Au_11nm_Rosenblatt, Au_21nm_Rosenblatt, Au_44nm_Rosenblatt, Au_Babar, Au_McPeak, Au_OlmonEvaporated, Au_OlmonSingleChrystaline, Au_OlmonTemplateStripped, Pd_Johnson, Pd_Werner, Pd_Palm_2018, Ag, LiF, SiO2_core_Sellmeier, SiO2_thinfilm_Ciprian, Au_unloaded, Pd014_unloaded, Pd034_unloaded, Pd034_loaded, Pd042_unloaded, Pd042_loaded, Pd052_unloaded, Pd052_loaded, Pd073_unloaded, Pd073_loaded, Pd_unloaded, Pd_loaded
+
+Au_11nm_Rosenblatt_estimator = LoadMaterial("materials/refractive_index/Au_11nm_Rosenblatt.csv")
+Au_11nm_Rosenblatt(λ) = Au_11nm_Rosenblatt_estimator(λ)
+
+Au_21nm_Rosenblatt_estimator = LoadMaterial("materials/refractive_index/Au_21nm_Rosenblatt.csv")
+Au_21nm_Rosenblatt(λ) = Au_21nm_Rosenblatt_estimator(λ)
+
+Au_44nm_Rosenblatt_estimator = LoadMaterial("materials/refractive_index/Au_44nm_Rosenblatt.csv")
+Au_44nm_Rosenblatt(λ) = Au_44nm_Rosenblatt_estimator(λ)
+
+Au_Babar_estimator = LoadMaterial("materials/refractive_index/Au_Babar.csv")
+Au_Babar(λ) = Au_Babar_estimator(λ)
+
+Au_McPeak_estimator = LoadMaterial("materials/refractive_index/Au_McPeak.csv")
+Au_McPeak(λ) = Au_McPeak_estimator(λ)
+
+Au_OlmonEvaporated_estimator = LoadMaterial("materials/refractive_index/Au_OlmonEvaporated.csv")
+Au_OlmonEvaporated(λ) = Au_OlmonEvaporated_estimator(λ)
+
+Au_OlmonSingleChrystaline_estimator = LoadMaterial("materials/refractive_index/Au_OlmonSingleChrystaline.csv")
+Au_OlmonSingleChrystaline(λ) = Au_OlmonSingleChrystaline_estimator(λ)
+
+Au_OlmonTemplateStripped_estimator = LoadMaterial("materials/refractive_index/Au_OlmonTemplateStripped.csv")
+Au_OlmonTemplateStripped(λ) = Au_OlmonTemplateStripped_estimator(λ)
 
 
 Au_Johnson_estimator = LoadMaterial("materials/refractive_index/Au_Johnson.csv")
