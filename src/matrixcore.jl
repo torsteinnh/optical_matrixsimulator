@@ -16,7 +16,7 @@ function StoM(S::Matrix{T})::Matrix{<:Number} where T <: Number
         r12 = S[2, 1]
         t21 = S[2, 2]
     end
-        M = [
+    M = [
         t12*t21 - r12*r21 r21;
         -r12              1
     ]

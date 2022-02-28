@@ -1,7 +1,7 @@
 using Plots
 
 using simulator.fresnelltools
-include("../src/utilities.jl")
+include("../../src/utilities.jl")
 using .utilities
 
 

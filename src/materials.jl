@@ -43,7 +43,10 @@ import ..LoadMaterial
 using ...analyticalmaterials
 
 
-export Au_Johnson, Au_Werner, Au_11nm_Rosenblatt, Au_21nm_Rosenblatt, Au_44nm_Rosenblatt, Au_Babar, Au_McPeak, Au_OlmonEvaporated, Au_OlmonSingleChrystaline, Au_OlmonTemplateStripped, Pd_Johnson, Pd_Werner, Pd_Palm_2018, Ag, LiF, SiO2_core_Sellmeier, SiO2_thinfilm_Ciprian, Au_unloaded, Pd014_unloaded, Pd034_unloaded, Pd034_loaded, Pd042_unloaded, Pd042_loaded, Pd052_unloaded, Pd052_loaded, Pd073_unloaded, Pd073_loaded, Pd_unloaded, Pd_loaded
+export Air, Au_Johnson, Au_Werner, Au_11nm_Rosenblatt, Au_21nm_Rosenblatt, Au_44nm_Rosenblatt, Au_Babar, Au_McPeak, Au_OlmonEvaporated, Au_OlmonSingleChrystaline, Au_OlmonTemplateStripped, Pd_Johnson, Pd_Werner, Pd_Palm_2018, Ag, LiF, SiO2_core_Sellmeier, SiO2_thinfilm_Ciprian, Au_unloaded, Pd014_unloaded, Pd034_unloaded, Pd034_loaded, Pd042_unloaded, Pd042_loaded, Pd052_unloaded, Pd052_loaded, Pd073_unloaded, Pd073_loaded, Pd_unloaded, Pd_loaded
+
+Air(λ) = 1
+
 
 Au_11nm_Rosenblatt_estimator = LoadMaterial("materials/refractive_index/Au_11nm_Rosenblatt.csv")
 Au_11nm_Rosenblatt(λ) = Au_11nm_Rosenblatt_estimator(λ)

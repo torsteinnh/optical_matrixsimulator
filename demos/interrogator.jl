@@ -7,19 +7,19 @@ using simulator.materials.spesifics
 save = false
 
 n_1 = SiO2_core_Sellmeier
-n_2 = Pd_unloaded
-n_3 = l -> 1
-n_4 = l -> 1
-n_5 = l -> 1
+n_2 = Au_Johnson
+n_3 = Pd052_unloaded
+n_4 = Air
+n_5 = Air
 
 d_1 = 30e-9
-d_2 = 20e-9
-d_3 = 10e-9
+d_2 = 30e-9
+d_3 = 5e-9
 d_4 = 10e-9
 d_5 = 10e-9
 
 λ = 1200e-9
-θd = 80.3
+θd = 45
 
 step = 1e-10
 expression_total(Up, Un) = abs(Up + Un)^2

@@ -8,5 +8,6 @@ include("ema.jl")
 include("materials.jl")
 include("matrixcore.jl")
 include("fresnelltools.jl")
+include("targetfigures.jl")
 
 end # simulator
