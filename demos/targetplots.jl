@@ -6,7 +6,7 @@ using simulator.targetfigures
 
 # Simulation parameters start
 
-save = true
+save = false
 
 n1 = SiO2_core_Sellmeier
 n2 = Au_Johnson
@@ -27,7 +27,10 @@ d3ss = 1e-10
 d3smrd2sm = 0.4
 
 λ = 1200e-9
-λs = [x for x in 600e-9:5e-10:1400e-9]
+λs = [x for x in 600e-9:1e-10:1400e-9]
+
+Hcs = [x for x in 1e-2:1e-2:1e-1]
+Pd_c = 0.52
 
 θd = 45
 
@@ -56,6 +59,25 @@ end
 fig_single = plot(xs .* 1e9, ys, title="$description, Single scan spectra", xaxis="λ [nm]", yaxis="Power reflection coefficient", legend=false)
 display(fig_single)
 if save savefig(fig_single, fig_path * "single_" * fig_token * ".pdf") end
+
+# Plot hydrogen concentration scan:
+println("\nScan hydrogen timing:")
+@time begin
+system_Hc = make_hc_system(n1, n2, n3, n4, n5, d1, d2, d3, d4, d5, θ1, Pd_c)
+xs, ysr, ysλ, ysw, ysΔ = scan_plasmon_singleparameter(system_Hc, Hcs, λs, 2)
+end
+fig_d3r = plot(xs .* 1e2, ysr, title="$description, hydrogen scan", xaxis="Hydrogen concentration [%]", yaxis="Power reflection coefficient minima", legend=false)
+fig_d3λ = plot(xs .* 1e2, ysλ .* 1e9, title="$description, hydrogen scan", xaxis="Hydrogen concentration [%]", yaxis="λ [nm]", legend=false)
+fig_d3w = plot(xs .* 1e2, ysw .* 1e9, title="$description, hydrogen scan", xaxis="Hydrogen concentration [%]", yaxis="λ plasmon dip FWHM [nm]", legend=false)
+fig_d3Δ = plot(xs .* 1e2, ysΔ, title="$description, hydrogen scan", xaxis="Hydrogen concentration [%]", yaxis="Plasmon peak power reflection Δ", legend=false)
+display(fig_d3r)
+if save savefig(fig_d3r, fig_path * "Hcr_" * fig_token * ".pdf") end
+display(fig_d3λ)
+if save savefig(fig_d3λ, fig_path * "Hcl_" * fig_token * ".pdf") end
+display(fig_d3w)
+if save savefig(fig_d3w, fig_path * "Hcw_" * fig_token * ".pdf") end
+display(fig_d3Δ)
+if save savefig(fig_d3Δ, fig_path * "Hcd_" * fig_token * ".pdf") end
 
 # Plot d3 scan:
 println("\nScan d3 timing:")

@@ -2,8 +2,9 @@ module targetfigures
 
 using ..matrixcore
 using ..fresnelltools
+using ..analyticalmaterials.hs_Palm
 
-export scann_singleparameter, scan_plasmon_singleparameter, scan_plasmon_dualparameter, scan_plasmon_dualthicknesses, make_layered_tm_system, make_d3_system, make_d2_dualparameter_system
+export scann_singleparameter, scan_plasmon_singleparameter, scan_plasmon_dualparameter, scan_plasmon_dualthicknesses, make_layered_tm_system, make_d3_system, make_d2_dualparameter_system, make_hc_system
 
 
 function scann_singleparameter(system::Function, scanrange::Vector{<:Number}, postprocessing::Function=v -> abs(v[2, 1])^2)::Tuple{Vector{<:Number}, Vector}
@@ -278,6 +279,18 @@ function make_d2_dualparameter_system(n1::Function, n2::Function, n3::Function, 
     end
 
     tm_dualparameter_system
+end
+function make_hc_system(n1::Function, n2::Function, n3::Function, n4::Function, n5::Function, d1::Float64, d2::Float64, d3::Float64, d4::Float64, d5::Float64, θi::Float64, Pd_c::Float64)::Function
+    function tm_singleparameter_system(H_c::Float64)::Function
+
+        function modified_n3(λ::Float64)::Number
+            √(h(λ, H_c, Pd_c) * n3(λ)^2)
+        end
+
+        make_layered_tm_system([n1, n2, modified_n3, n4, n5], [d1, d2, d3, d4, d5], θi)
+    end
+
+    tm_singleparameter_system
 end
 
 
