@@ -3,7 +3,7 @@ module targetfigures
 using ..matrixcore
 using ..fresnelltools
 
-export scann_singleparameter, scan_plasmon_singleparameter, scan_plasmon_dualparameter, make_layered_tm_system, make_d3_system, make_d2_dualparameter_system
+export scann_singleparameter, scan_plasmon_singleparameter, scan_plasmon_dualparameter, scan_plasmon_dualthicknesses, make_layered_tm_system, make_d3_system, make_d2_dualparameter_system
 
 
 function scann_singleparameter(system::Function, scanrange::Vector{<:Number}, postprocessing::Function=v -> abs(v[2, 1])^2)::Tuple{Vector{<:Number}, Vector}
@@ -56,6 +56,73 @@ function plasmon_minima(system::Function, λs::Vector{Float64}, predipps::Int64=
 end
 
 
+function plasmon_halfwidth(system::Function, λs::Vector{Float64}, predipps::Int64=1, widthratio::Float64=0.5)::Tuple{Float64, Float64, Float64, Float64, Float64}
+    # This function finds the plasmon minima dip half peak width (half can be changed by widthratio parameter).
+    # It opperates similarly to the plasmon_minima function.
+
+    λleftmax = 0.0
+
+    λleft = 0.0
+    λright = 0.0
+    λmin = 0.0
+
+    minr = 1.0
+    maxr = 0.0
+
+    initialrise = predipps
+    thisr = abs(system(λs[1])[2, 1])^2
+
+    for λ in λs
+        lastr = thisr
+        thisr = abs(system(λ)[2, 1])^2
+
+        if initialrise >= 1
+            if thisr < lastr
+                initialrise -= 1
+                minr = thisr
+                λmin = λ
+            end
+
+            if thisr > maxr
+                maxr = thisr
+               λleftmax = λ
+            end
+        end
+
+        if thisr < minr
+            minr = thisr
+            λmin = λ
+        end
+
+    end
+
+    rthreshold = minr + ((maxr - minr) * widthratio)
+
+    for λ in λs
+        if λ >= λleftmax
+            thisr = abs(system(λ)[2, 1])^2
+
+            if (thisr > rthreshold) && (λ <= λmin)
+                λleft = λ
+            end
+
+            if (thisr < rthreshold) && (λ >= λmin)
+                λright = λ
+            end
+
+            if (thisr > rthreshold) && (λ >= λmin)
+                break
+            end
+
+        end
+    end
+    
+    width = λright - λleft
+    
+    width, maxr - minr, λleft, λright, λmin
+end
+
+
 function scan_minima(xs::Vector{<:Number}, ys::Vector{<:Number})::Tuple{Number, Number}
     # An optimized function for finding the minimum of a curve.
 
@@ -77,8 +144,29 @@ function scan_minima(xs::Vector{<:Number}, ys::Vector{<:Number})::Tuple{Number, 
     xmin, ymin
 end
 
+function scan_maxima(xs::Vector{<:Number}, ys::Vector{<:Number})::Tuple{Number, Number}
+    # An optimized function for finding the minimum of a curve.
 
-function scan_plasmon_singleparameter(system::Function, scanrange::Vector{<:Number}, λs::Vector{Float64}, predipps::Int64=1)::Tuple{Vector{<:Number}, Vector{Float64}, Vector{Float64}}
+    @assert(length(xs) == length(ys))
+    @assert(length(xs) > 0)
+
+    @inbounds begin
+        xmax = xs[1]
+        ymax = ys[1]
+
+        for i in 1:length(xs)
+            if ys[i] > ymax
+                xmax = xs[i]
+                ymax = ys[i]
+            end
+        end
+    end
+
+    xmax, ymax
+end
+
+
+function scan_plasmon_singleparameter(system::Function, scanrange::Vector{<:Number}, λs::Vector{Float64}, predipps::Int64=1)::Tuple{Vector{<:Number}, Vector{Float64}, Vector{Float64}, Vector{Float64}, Vector{Float64}}
     # A tool for running a single parameter plasmon scan.
     # Takes the following arguments:
     #   system: A function of the scanparameter returning a function on the form λ -> S.
@@ -89,9 +177,12 @@ function scan_plasmon_singleparameter(system::Function, scanrange::Vector{<:Numb
     # Functions similarly to the single thickness scann one-off written in demos/thickness.jl.
 
     plasmonfinder(subsystem) = plasmon_minima(subsystem, λs, predipps)
-    _, output = scann_singleparameter(system, scanrange, plasmonfinder)
+    plasmonwidthfinder(subsystem) = plasmon_halfwidth(subsystem, λs, predipps)
 
-    scanrange, [x[1] for x in output], [x[2] for x in output]
+    _, plasmin_minima_output = scann_singleparameter(system, scanrange, plasmonfinder)
+    _, plasmon_width_output = scann_singleparameter(system, scanrange, plasmonwidthfinder)
+
+    scanrange, [x[1] for x in plasmin_minima_output], [x[2] for x in plasmin_minima_output], [z[1] for z in plasmon_width_output], [z[2] for z in plasmon_width_output]
 end
 
 
@@ -105,7 +196,7 @@ function scan_plasmon_dualparameter(system::Function, parameter1s::Vector{<:Numb
     for i in 1:length(parameter1s)
         p1 = parameter1s[i]
 
-        _, reflections, wavelengths = scan_plasmon_singleparameter(system(p1), parameter2s, λs, predipps)
+        _, reflections, wavelengths, _, _ = scan_plasmon_singleparameter(system(p1), parameter2s, λs, predipps)
         minRP2, _ = scan_minima(parameter2s, reflections)
         minλP2, _ = scan_minima(parameter2s, wavelengths) # TODO this might be a suboptimal target function, try to find something better based on the plataus observed.
 
@@ -114,6 +205,37 @@ function scan_plasmon_dualparameter(system::Function, parameter1s::Vector{<:Numb
     end
 
     parameter1s, minRP2s, minλP2s
+end
+
+function scan_plasmon_dualthicknesses(system::Function, d1min, d1max, d1step, d2min, d2max, d2step, λs::Vector{Float64}, predipps::Int64=1, layertolerance::Float64=0.5)Tuple{Vector{<:Number}, Vector{<:Number}, Vector{<:Number}, Vector{<:Number}, Vector{<:Number}}
+    # A tool for scanning for plasmon peaks across two parameters.
+    # The function runs the single parameter scan on parameter 2 for each of parameter 1, it then plots the optimal parameter 2 as a function of parameter 1.
+    
+    parameter1s = [x for x in d1min:d1step:d1max]
+
+    minRP2s = Vector(undef, length(parameter1s))
+    minλP2s = Vector(undef, length(parameter1s))
+    minFWHMP2s = Vector(undef, length(parameter1s))
+    maxΔRP2s = Vector(undef, length(parameter1s))
+    
+    for i in 1:length(parameter1s)
+        p1 = parameter1s[i]
+
+        parameter2s = [x for x in d2min:d2step:min(d2max, p1 * layertolerance)]
+
+        _, reflections, wavelengths, peakwidths, peakdeltas = scan_plasmon_singleparameter(system(p1), parameter2s, λs, predipps)
+        minRP2, _ = scan_minima(parameter2s, reflections)
+        minλP2, _ = scan_minima(parameter2s, wavelengths) # TODO this might be a suboptimal target function, try to find something better based on the plataus observed.
+        minFWHMP2, _ = scan_minima(parameter2s, peakwidths)
+        maxΔRP2, _ = scan_maxima(parameter2s, peakdeltas)
+
+        minRP2s[i] = minRP2
+        minλP2s[i] = minλP2
+        minFWHMP2s[i] = minFWHMP2
+        maxΔRP2s[i] = maxΔRP2
+    end
+
+    parameter1s, minRP2s, minλP2s, minFWHMP2s, maxΔRP2s
 end
 
 

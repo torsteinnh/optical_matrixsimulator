@@ -6,7 +6,7 @@ using simulator.targetfigures
 
 # Simulation parameters start
 
-save = false
+save = true
 
 n1 = SiO2_core_Sellmeier
 n2 = Au_Johnson
@@ -20,11 +20,14 @@ d2 = 30e-9
 d3 = 5e-9
 d4 = 10e-9
 d5 = 10e-9
-d2s = [x for x in 0:1e-9:40e-9]
-d3s = [x for x in 0:1e-10:40e-9]
+d2smax = 40e-9
+d3smax = 40e-9
+d2ss = 1e-9
+d3ss = 1e-10
+d3smrd2sm = 0.4
 
 λ = 1200e-9
-λs = [x for x in 600e-9:1e-9:1400e-9]
+λs = [x for x in 600e-9:5e-10:1400e-9]
 
 θd = 45
 
@@ -58,18 +61,33 @@ if save savefig(fig_single, fig_path * "single_" * fig_token * ".pdf") end
 println("\nScan d3 timing:")
 @time begin
 system_d3 = make_d3_system(n1, n2, n3, n4, n5, d1, d2, d4, d5, θ1)
-xs, ysr, _ = scan_plasmon_singleparameter(system_d3, d3s, λs)
+xs, ysr, ysλ, ysw, ysΔ = scan_plasmon_singleparameter(system_d3, [x for x in 0:d3ss:(d2*d3smrd2sm)], λs, 2)
 end
-fig_d3 = plot(xs .* 1e9, ysr, title="$description, Active layer scan", xaxis="d [nm]", yaxis="Power reflection coefficient minima", legend=false)
-display(fig_d3)
-if save savefig(fig_d3, fig_path * "d3_" * fig_token * ".pdf") end
+fig_d3r = plot(xs .* 1e9, ysr, title="$description, Active layer scan", xaxis="d [nm]", yaxis="Power reflection coefficient minima", legend=false)
+fig_d3λ = plot(xs .* 1e9, ysλ .* 1e9, title="$description, Active layer scan", xaxis="d [nm]", yaxis="λ [nm]", legend=false)
+fig_d3w = plot(xs .* 1e9, ysw .* 1e9, title="$description, Active layer scan", xaxis="d [nm]", yaxis="λ plasmon dip FWHM [nm]", legend=false)
+fig_d3Δ = plot(xs .* 1e9, ysΔ, title="$description, Active layer scan", xaxis="d [nm]", yaxis="Plasmon peak power reflection Δ", legend=false)
+display(fig_d3r)
+if save savefig(fig_d3r, fig_path * "d3r_" * fig_token * ".pdf") end
+display(fig_d3λ)
+if save savefig(fig_d3λ, fig_path * "d3l_" * fig_token * ".pdf") end
+display(fig_d3w)
+if save savefig(fig_d3w, fig_path * "d3w_" * fig_token * ".pdf") end
+display(fig_d3Δ)
+if save savefig(fig_d3Δ, fig_path * "d3d_" * fig_token * ".pdf") end
 
 # Plot d2 on d3 scan:
 println("\nScan d2 and d3 timing:")
 @time begin
 system_d2 = make_d2_dualparameter_system(n1, n2, n3, n4, n5, d1, d4, d5, θ1)
-xs_d2, ys_d3, _ = scan_plasmon_dualparameter(system_d2, d2s, d3s, λs)
+xs_d2, ys_d3R, _, ys_d3ν, ys_d3Δ = scan_plasmon_dualthicknesses(system_d2, 0, d2smax, d2ss, 0, d3smax, d3ss, λs, 1, d3smrd2sm)
 end
-fig_d2 = plot(xs_d2 .* 1e9, ys_d3 .* 1e9, title="$description, Double layer scan", xaxis="Au thickness [nm]", yaxis="Pd thickness [nm]", legend=false)
-display(fig_d2)
-if save savefig(fig_d2, fig_path * "d2-d3_" * fig_token * ".pdf") end
+fig_d2R = plot(xs_d2 .* 1e9, ys_d3R .* 1e9, title="$description, minimum plasmon dip", xaxis="Au thickness [nm]", yaxis="Pd thickness [nm]", legend=false)
+display(fig_d2R)
+if save savefig(fig_d2R, fig_path * "d2-d3-R_" * fig_token * ".pdf") end
+fig_d2ν = plot(xs_d2 .* 1e9, ys_d3ν .* 1e9, title="$description, minimum plasmon FWHM", xaxis="Au thickness [nm]", yaxis="Pd thickness [nm]", legend=false)
+display(fig_d2ν)
+if save savefig(fig_d2ν, fig_path * "d2-d3-FWHM_" * fig_token * ".pdf") end
+fig_d2R = plot(xs_d2 .* 1e9, ys_d3Δ .* 1e9, title="$description, maximum plasmon peak to peak", xaxis="Au thickness [nm]", yaxis="Pd thickness [nm]", legend=false)
+display(fig_d2R)
+if save savefig(fig_d2R, fig_path * "d2-d3-P2P_" * fig_token * ".pdf") end
