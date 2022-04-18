@@ -71,7 +71,14 @@ import ..ϵ
 export h
 
 
-function loadLine(path, λ::Float64, Pd_c::Float64)::Function
+rawdatafile034 = readdlm("materials/palm_PdAu-H/HM_Pd034.csv", ',', skipstart=2)
+rawdatafile042 = readdlm("materials/palm_PdAu-H/HM_Pd042.csv", ',', skipstart=2)
+rawdatafile052 = readdlm("materials/palm_PdAu-H/HM_Pd052.csv", ',', skipstart=2)
+rawdatafile073 = readdlm("materials/palm_PdAu-H/HM_Pd073.csv", ',', skipstart=2)
+rawdatafile100 = readdlm("materials/palm_PdAu-H/HM_Pd100.csv", ',', skipstart=2)
+
+
+function loadLine(filerawdata, λ::Float64, Pd_c::Float64)::Function
     point = @match λ begin
         300e-9 => 1
         600e-9 => 2
@@ -81,8 +88,6 @@ function loadLine(path, λ::Float64, Pd_c::Float64)::Function
         _ => 0
     end
     offsett = 10
-
-    filerawdata = readdlm(path, ',', skipstart=2)
 
     raw_n = filerawdata[:, (point*2 - 1):(point*2)]
     raw_k = filerawdata[:, (point*2 - 1 + offsett):(point*2 + offsett)]
@@ -104,25 +109,29 @@ end
 
 function c_to_HM(H_c::Float64, Pd_c::Float64)::Float64
     # Based on Palm2019 fig. S7
-    # Assumes concentration under 1 atmosphere pressure, assumes 1 atm = 1 bar
-    # Assumes the effect of a low pressure of pure hydrogen is the same as the equivalent partial pressure hydrogen in an otherwize inert atmosphere totalling 1 bar
-    # Assumes the relation between HM and c is linear
-    # Both H_c and Pd_c should be given as the ratio of hydrogen in the atmosphere and palladium atoms in the Pd-Au alloy between 0 and 1
+    # Assumes concentration under 1 atmosphere pressure
+    # Assumes the effect of a low pressure of pure hydrogen is the same as the equivalent partial pressure hydrogen in an otherwize inert atmosphere totalling 1 atmosphere
+    # Assumes the relation between HM and H_c is proportional to the square root of H_c, as shown in separate note
+    # H_c is the partial pressure of hydrogen in the atmosphere given in atmospheres, the approximation is only valid for H_c ⪅ 0.25
+    # Pd_c is the atomic alloying ratio between Pd and Au, and should be between 0.4 and 1    
+    # The following data was extracted from the figure:
+    # 41.50974025974026	0.0011235955056179137
+    # 99.9512987012987	0.6089887640449437
+    
+    HM_Pd_c025 = 1.04012484394507 * Pd_c - 0.43062952559301
 
-    HM_Pd_c025 = 1.0426 * Pd_c - 0.4347
-
-    H_c * HM_Pd_c025 / 0.25
+    sqrt(H_c * 1.01325) * HM_Pd_c025 / sqrt(0.25)
 end
 
 function h(λ::Float64, H_c::Float64, Pd_c::Float64)::Number
     # H_c and Pd_c is the hydrogen concentration and the Pd atomic concentration in the Pd-Au alloy, both between 0 and 1
     
-    filepath = @match Pd_c begin
-        0.34 => "materials/palm_PdAu-H/HM_Pd034.csv"
-        0.42 => "materials/palm_PdAu-H/HM_Pd042.csv"
-        0.52 => "materials/palm_PdAu-H/HM_Pd052.csv"
-        0.73 => "materials/palm_PdAu-H/HM_Pd073.csv"
-        1.0 => "materials/palm_PdAu-H/HM_Pd100.csv"
+    filerawdata = @match Pd_c begin
+        0.34 => rawdatafile034
+        0.42 => rawdatafile042
+        0.52 => rawdatafile052
+        0.73 => rawdatafile073
+        1.0 => rawdatafile100
         _ => "Illegal Pd_c"
     end
     
@@ -142,8 +151,8 @@ function h(λ::Float64, H_c::Float64, Pd_c::Float64)::Number
         λ_upper = 1500e-9
     end
 
-    h_lower = loadLine(filepath, λ_lower, Pd_c)(H_c)
-    h_upper = loadLine(filepath, λ_upper, Pd_c)(H_c)
+    h_lower = loadLine(filerawdata, λ_lower, Pd_c)(H_c)
+    h_upper = loadLine(filerawdata, λ_upper, Pd_c)(H_c)
 
     λ_partial = (λ - λ_lower) / (λ_upper - λ_lower)
     h_real = (h_upper - h_lower) * λ_partial + h_lower
