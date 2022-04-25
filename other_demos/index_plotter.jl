@@ -2,6 +2,7 @@ using Plots
 using simulator.materials.spesifics
 
 plotly()
+# gr()
 
 λs = 400e-9:1e-9:1500e-9
 
@@ -22,7 +23,7 @@ plot!(fig_n_Au, λs .* 1e9, real(SiO2_core_Sellmeier.(λs)), label="SiO2 core")
 display(fig_n_Au)
 # savefig(fig_n_Au, "../rapport/figures/IndexSourceComparisons/Au_n.pdf")
 
-fig_k_Au = plot(title="Real part of gold refractive indicies", legend=:outerright, xlabel="Wavelength [nm]", ylabel="k", ticks=:native)
+fig_k_Au = plot(title="Imaginary part of gold refractive indicies", legend=:bottomleft, xlabel="Wavelength [nm]", ylabel="k", ticks=:native)
 plot!(fig_k_Au, λs .* 1e9, imag(Au_Johnson.(λs)), label="Johnson")
 plot!(fig_k_Au, λs .* 1e9, imag(Au_Werner.(λs)), label="Werner")
 plot!(fig_k_Au, λs .* 1e9, imag(Au_unloaded.(λs)), label="Palm 2019")
@@ -49,7 +50,7 @@ plot!(fig_n_Pd, λs .* 1e9, real(SiO2_core_Sellmeier.(λs)), label="SiO2 core")
 display(fig_n_Pd)
 # savefig(fig_n_Pd, "../rapport/figures/IndexSourceComparisons/Pd_n.pdf")
 
-fig_k_Pd = plot(title="Real part of palladium refractive indicies", legend=:outerright, xlabel="Wavelength [nm]", ylabel="k", ticks=:native)
+fig_k_Pd = plot(title="Imaginary part of palladium refractive indicies", legend=:bottomleft, xlabel="Wavelength [nm]", ylabel="k", ticks=:native)
 plot!(fig_k_Pd, λs .* 1e9, imag(Pd_Johnson.(λs)), label="Johnson")
 plot!(fig_k_Pd, λs .* 1e9, imag(Pd_Werner.(λs)), label="Werner")
 plot!(fig_k_Pd, λs .* 1e9, imag(Pd_Palm_2018.(λs)), label="Palm 2018")
