@@ -1,7 +1,7 @@
 name = "simulator"
 uuid = "ff2c548e-ca0f-4ef0-904d-a9760906fddf"
 authors = ["torsteinnh <torsteinnh@gmail.com>"]
-version = "0.1.1"
+version = "0.2.0"
 
 [deps]
 DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"

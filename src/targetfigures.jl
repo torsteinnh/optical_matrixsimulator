@@ -199,7 +199,7 @@ function scan_plasmon_dualparameter(system::Function, parameter1s::Vector{<:Numb
 
         _, reflections, wavelengths, _, _ = scan_plasmon_singleparameter(system(p1), parameter2s, λs, predipps)
         minRP2, _ = scan_minima(parameter2s, reflections)
-        minλP2, _ = scan_minima(parameter2s, wavelengths) # TODO this might be a suboptimal target function, try to find something better based on the plataus observed.
+        minλP2, _ = scan_minima(parameter2s, wavelengths) # TODO this might be a suboptimal target function, try to find something better based on the plateaus observed.
 
         minRP2s[i] = minRP2
         minλP2s[i] = minλP2
