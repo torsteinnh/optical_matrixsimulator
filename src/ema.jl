@@ -35,13 +35,13 @@ function n_Bruggeman(ϵ_a::Number, ϵ_b::Number, f_A::Real)::Number
     ϵ_total_2 = (u - sqrt(u^2 + 8*ϵ_a*ϵ_b)) / 4
 
 
-    if seledt_Wiener_circle(ϵ_total_1, ϵ_a, ϵ_b)
-        return ϵ_total_1
-    elseif seledt_Wiener_circle(ϵ_total_2, ϵ_a, ϵ_b)
-        return ϵ_total_2
+    if select_Wiener_circle(ϵ_total_1, ϵ_a, ϵ_b)
+        return n(ϵ_total_1)
+    elseif select_Wiener_circle(ϵ_total_2, ϵ_a, ϵ_b)
+        return n(ϵ_total_2)
     else
-        @error "No valid solution from Wiener limits, returning ϵ = 0!"
-        return 0
+        @error "No valid solution from Wiener limits, returning best match."
+        return imag(ϵ_total_1) > imag(ϵ_total_2) ? ϵ_total_1 : ϵ_total_2
     end
 end
 
@@ -67,7 +67,7 @@ function n_Bruggeman(ϵ_a::Number, ϵ_b::Number, ϵ_c::Number, f_a::Real, f_b::R
         elseif (select_Wiener_circle(ϵ_potential, ϵ_a, ϵ_b) | select_Wiener_circle(ϵ_potential, ϵ_a, ϵ_c) | select_Wiener_circle(ϵ_potential, ϵ_b, ϵ_c))
             return ϵ_potential
         else
-            @error "No valid solution from Wiener limits, returning ϵ = 0!"
+            @error "No valid solution from Wiener limits, returning best matach."
             return 0
         end
     end
@@ -77,13 +77,13 @@ end
 function select_Wiener_circle(ϵ_s::Number, ϵ_1::Number, ϵ_2::Number)::Bool
     # Check if on line with origo, Jansson & Arwin algorithm
 
-    if (real(ϵ_1) * imag(ϵ_2) - real(ϵ_2) * imag(ϵ_1)) > 1e-8 * ϵ_1
+    if (real(ϵ_1) * imag(ϵ_2) - real(ϵ_2) * imag(ϵ_1)) < 1e-8 * abs(ϵ_1)
         function w(z::Number)::Number
             z * conj(ϵ_2 - ϵ_1) / abs(ϵ_2 - ϵ_1)
         end
         w_s, w_1, w_2 = w(ϵ_s), w(ϵ_1), w(ϵ_2)
 
-        if w_2 < w_1
+        if real(w_2) < real(w_1)
             w_s, w_1, w_2 = w_s * -1, w_1 * -1, w_2 * -1
         end
 
