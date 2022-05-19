@@ -4,7 +4,7 @@ using ..matrixcore
 using ..fresnelltools
 using ..analyticalmaterials.hs_Palm
 
-export scann_singleparameter, scan_plasmon_singleparameter, scan_plasmon_dualparameter, scan_plasmon_dualthicknesses, make_layered_tm_system, make_d3_system, make_d2_dualparameter_system, make_hc_system
+export scann_singleparameter, scan_plasmon_singleparameter, scan_plasmon_dualparameter, scan_plasmon_dualthicknesses, make_layered_tm_system, make_layered_θ_tm_system, make_d3_system, make_d4_system, make_d2_dualparameter_system, make_hc_system
 
 
 function scann_singleparameter(system::Function, scanrange::Vector{<:Number}, postprocessing::Function=v -> abs(v[2, 1])^2)::Tuple{Vector{<:Number}, Vector}
@@ -55,7 +55,6 @@ function plasmon_minima(system::Function, λs::Vector{Float64}, predipps::Int64=
 
     minr, minλ
 end
-
 
 function plasmon_halfwidth(system::Function, λs::Vector{Float64}, predipps::Int64=1, widthratio::Float64=0.5)::Tuple{Float64, Float64, Float64, Float64, Float64}
     # This function finds the plasmon minima dip half peak width (half can be changed by widthratio parameter).
@@ -180,14 +179,14 @@ function scan_plasmon_singleparameter(system::Function, scanrange::Vector{<:Numb
     plasmonfinder(subsystem) = plasmon_minima(subsystem, λs, predipps)
     plasmonwidthfinder(subsystem) = plasmon_halfwidth(subsystem, λs, predipps)
 
-    _, plasmin_minima_output = scann_singleparameter(system, scanrange, plasmonfinder)
+    _, plasmon_minima_output = scann_singleparameter(system, scanrange, plasmonfinder)
     _, plasmon_width_output = scann_singleparameter(system, scanrange, plasmonwidthfinder)
 
-    scanrange, [x[1] for x in plasmin_minima_output], [x[2] for x in plasmin_minima_output], [z[1] for z in plasmon_width_output], [z[2] for z in plasmon_width_output]
+    scanrange, [x[1] for x in plasmon_minima_output], [x[2] for x in plasmon_minima_output], [z[1] for z in plasmon_width_output], [z[2] for z in plasmon_width_output]
 end
 
 
-function scan_plasmon_dualparameter(system::Function, parameter1s::Vector{<:Number}, parameter2s::Vector{<:Number}, λs::Vector{Float64}, predipps::Int64=1)Tuple{Vector{<:Number}, Vector{<:Number}, Vector{<:Number}}
+function scan_plasmon_dualparameter(system::Function, parameter1s::Vector{<:Number}, parameter2s::Vector{<:Number}, λs::Vector{Float64}, predipps::Int64=1)::Tuple{Vector{<:Number}, Vector, Vector}
     # A tool for scanning for plasmon peaks across two parameters.
     # The function runs the single parameter scan on parameter 2 for each of parameter 1, it then plots the optimal parameter 2 as a function of parameter 1.
     
@@ -208,7 +207,7 @@ function scan_plasmon_dualparameter(system::Function, parameter1s::Vector{<:Numb
     parameter1s, minRP2s, minλP2s
 end
 
-function scan_plasmon_dualthicknesses(system::Function, d1min, d1max, d1step, d2min, d2max, d2step, λs::Vector{Float64}, predipps::Int64=1, layertolerance::Float64=0.5)Tuple{Vector{<:Number}, Vector{<:Number}, Vector{<:Number}, Vector{<:Number}, Vector{<:Number}}
+function scan_plasmon_dualthicknesses(system::Function, d1min, d1max, d1step, d2min, d2max, d2step, λs::Vector{Float64}, predipps::Int64=1, layertolerance::Float64=0.5)::Tuple{Vector{<:Number}, Vector, Vector, Vector, Vector}
     # A tool for scanning for plasmon peaks across two parameters.
     # The function runs the single parameter scan on parameter 2 for each of parameter 1, it then plots the optimal parameter 2 as a function of parameter 1.
     
@@ -266,8 +265,40 @@ function make_layered_tm_system(ns::Vector{Function}, ds::Vector{Float64}, θi::
 end
 
 
+function make_layered_θ_tm_system(ns::Vector{Function}, ds::Vector{Float64}, λ::Float64)::Function
+    # A tool for generating θ -> S functions for arbitrary layered systems.
+
+    @assert(length(ns) == length(ds))
+
+    function S(θi)
+        θw = θi
+
+        elements = Vector(undef, 2 * length(ns) - 2)
+
+        for i in 1:(length(ns) - 1)
+            bulk = FresnellSlab(ns[i](λ), 2*π/λ, ds[i], θw)
+            _, border, θw = FresnellBoundrary(ns[i](λ), ns[i + 1](λ), θw)
+
+            elements[2*i - 1] = bulk
+            elements[2*i] = border
+        end
+
+        CascadeScattering(elements)
+    end
+
+    S
+end
+
+
 function make_d3_system(n1::Function, n2::Function, n3::Function, n4::Function, n5::Function, d1::Float64, d2::Float64, d4::Float64, d5::Float64, θi::Float64)::Function
     function tm_singleparameter_system(d3::Float64)::Function
+        make_layered_tm_system([n1, n2, n3, n4, n5], [d1, d2, d3, d4, d5], θi)
+    end
+
+    tm_singleparameter_system
+end
+function make_d4_system(n1::Function, n2::Function, n3::Function, n4::Function, n5::Function, d1::Float64, d2::Float64, d3::Float64, d5::Float64, θi::Float64)::Function
+    function tm_singleparameter_system(d4::Float64)::Function
         make_layered_tm_system([n1, n2, n3, n4, n5], [d1, d2, d3, d4, d5], θi)
     end
 
