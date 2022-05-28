@@ -19,6 +19,18 @@ function LoadMaterial(path) # Loads material where complex refractive index is c
     n_total
 end
 
+function LoadMaterial(path, number::Number) # Loads material where several complex refractive inicies are contained in one file
+    material = readdlm(path, ',', skipstart=2)
+
+    n_data = [material[:, 1] .* 1e-9, material[:, (number*2)]]
+    k_data = [material[:, 1] .* 1e-9, material[:, (number*2 + 1)]]
+    n_real = LinearInterpolation(n_data[1], n_data[2])
+    n_complex = LinearInterpolation(k_data[1], k_data[2])
+
+    n_total(λ) = n_real(λ) - abs(n_complex(λ)) * 1im
+    n_total
+end
+
 function LoadMaterial(path_n, path_k, number) # Loads material where n and k are split and dumped by webplotdigitizer
     material_n = readdlm(path_n, ',', skipstart=2)[:, (number*2 - 1):(number*2)]
     material_k = readdlm(path_k, ',', skipstart=2)[:, (number*2 - 1):(number*2)]
@@ -43,7 +55,8 @@ import ..LoadMaterial
 using ...analyticalmaterials
 
 
-export Air, Au_Johnson, Au_Werner, Au_11nm_Rosenblatt, Au_21nm_Rosenblatt, Au_44nm_Rosenblatt, Au_Babar, Au_McPeak, Au_OlmonEvaporated, Au_OlmonSingleChrystaline, Au_OlmonTemplateStripped, Pd_Johnson, Pd_Werner, Pd_Palm_2018, Ag, LiF, SiO2_core_Sellmeier, SiO2_thinfilm_Ciprian, Au_unloaded, Pd014_unloaded, Pd034_unloaded, Pd034_loaded, Pd042_unloaded, Pd042_loaded, Pd052_unloaded, Pd052_loaded, Pd073_unloaded, Pd073_loaded, Pd_unloaded, Pd_loaded
+export Air, Au_Johnson, Au_Werner, Au_11nm_Rosenblatt, Au_21nm_Rosenblatt, Au_44nm_Rosenblatt, Au_Babar, Au_McPeak, Au_OlmonEvaporated, Au_OlmonSingleChrystaline, Au_OlmonTemplateStripped, Pd_Johnson, Pd_Werner, Pd_Palm_2018, Ag, LiF, SiO2_core_Sellmeier, SiO2_thinfilm_Ciprian, Au_unloaded, Pd014_unloaded, Pd034_unloaded, Pd034_loaded, Pd042_unloaded, Pd042_loaded, Pd052_unloaded, Pd052_loaded, Pd073_unloaded, Pd073_loaded, Pd_unloaded, Pd_loaded, Pd000S5, Pd100S20, Pd070S9to17, Pd041S21, Pd051S22, Pd061S23, Pd069S24, Pd064S7and18, Pd053S6, Pd074S8drude, Pd061S19, Pd061S19drude
+
 
 Air(λ) = 1
 
@@ -146,6 +159,45 @@ Pd073_loaded(λ) = Pd073_loaded_estimator(λ)
 Pd_loaded_estimator = LoadMaterial("materials/palm_PdAu-alloys/loaded_n.csv", "materials/palm_PdAu-alloys/loaded_k.csv", 7)
 Pd_loaded(λ) = Pd_loaded_estimator(λ)
 
+
+
+Pd000S5_estimator = LoadMaterial("materials/thesisdata/Au_Pd_Multi_sample_9_17.txt", 1)
+Pd000S5(λ) = Pd000S5_estimator(λ)
+
+Pd100S20_estimator = LoadMaterial("materials/thesisdata/Au_Pd_Multi_sample_9_17.txt", 2)
+Pd100S20(λ) = Pd100S20_estimator(λ)
+
+Pd070S9to17_estimator = LoadMaterial("materials/thesisdata/Au_Pd_Multi_sample_9_17.txt", 3)
+Pd070S9to17(λ) = Pd070S9to17_estimator(λ)
+
+
+Pd041S21_estimator = LoadMaterial("materials/thesisdata/Samples_21_24_B_spline_N_k.txt", 1)
+Pd041S21(λ) = Pd041S21_estimator(λ)
+
+Pd051S22_estimator = LoadMaterial("materials/thesisdata/Samples_21_24_B_spline_N_k.txt", 2)
+Pd051S22(λ) = Pd051S22_estimator(λ)
+
+Pd061S23_estimator = LoadMaterial("materials/thesisdata/Samples_21_24_B_spline_N_k.txt", 3)
+Pd061S23(λ) = Pd061S23_estimator(λ)
+
+Pd069S24_estimator = LoadMaterial("materials/thesisdata/Samples_21_24_B_spline_N_k.txt", 4)
+Pd069S24(λ) = Pd069S24_estimator(λ)
+
+
+Pd064S7and18_estimator = LoadMaterial("materials/thesisdata/Remaining_samples.txt", 1)
+Pd064S7and18(λ) = Pd064S7and18_estimator(λ)
+
+Pd053S6_estimator = LoadMaterial("materials/thesisdata/Remaining_samples.txt", 2)
+Pd053S6(λ) = Pd053S6_estimator(λ)
+
+Pd074S8drude_estimator = LoadMaterial("materials/thesisdata/Remaining_samples.txt", 3)
+Pd074S8drude(λ) = Pd074S8drude_estimator(λ)
+
+Pd061S19_estimator = LoadMaterial("materials/thesisdata/Remaining_samples.txt", 4)
+Pd061S19(λ) = Pd061S19_estimator(λ)
+
+Pd061S19drude_estimator = LoadMaterial("materials/thesisdata/Remaining_samples.txt", 5)
+Pd061S19drude(λ) = Pd061S19_estimator(λ)
 
 end # spesifics
 
