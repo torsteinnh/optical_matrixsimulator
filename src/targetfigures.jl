@@ -4,11 +4,11 @@ using ..matrixcore
 using ..fresnelltools
 using ..analyticalmaterials.hs_Palm
 
-export scann_singleparameter, scan_plasmon_singleparameter, scan_plasmon_dualparameter, scan_plasmon_dualthicknesses, make_layered_tm_system, make_layered_θ_tm_system, make_d3_system, make_d4_system, make_d2_dualparameter_system, make_hc_system
+export scan_singleparameter, scan_plasmon_singleparameter, scan_plasmon_dualparameter, scan_plasmon_dualthicknesses, make_layered_tm_system, make_layered_θ_tm_system, make_d3_system, make_d4_system, make_d2_dualparameter_system, make_hc_system
 
 
-function scann_singleparameter(system::Function, scanrange::Vector{<:Number}, postprocessing::Function=v -> abs(v[2, 1])^2)::Tuple{Vector{<:Number}, Vector}
-    # This function provides a unified interface for scanning structures for different design parameters.
+function scan_singleparameter(system::Function, scanrange::Vector{<:Number}, postprocessing::Function=v -> abs(v[2, 1])^2)::Tuple{Vector{<:Number}, Vector}
+    # This function provides a unified interface for scaning structures for different design parameters.
     # It akes a parameter "system", a function returning (for instance) a total scattering matrix, a scans it for all elements in the scanrange and a postprocessing expression.
     # Returns the scanrange and the output data.
     # The default postprocessing stage takes a scattering matrix and returns the power reflection coefficient.
@@ -174,20 +174,20 @@ function scan_plasmon_singleparameter(system::Function, scanrange::Vector{<:Numb
     #   λs: A range of wavelengths.
     #   predipps: The number of local maxima in the reflection spectrum to scan through before finding the plasmon minima.
     # Returns the scanrange, the minimum reflection coefficients and the relevant wavelengths.
-    # Functions similarly to the single thickness scann one-off written in demos/thickness.jl.
+    # Functions similarly to the single thickness scan one-off written in demos/thickness.jl.
 
     plasmonfinder(subsystem) = plasmon_minima(subsystem, λs, predipps)
     plasmonwidthfinder(subsystem) = plasmon_halfwidth(subsystem, λs, predipps)
 
-    _, plasmon_minima_output = scann_singleparameter(system, scanrange, plasmonfinder)
-    _, plasmon_width_output = scann_singleparameter(system, scanrange, plasmonwidthfinder)
+    _, plasmon_minima_output = scan_singleparameter(system, scanrange, plasmonfinder)
+    _, plasmon_width_output = scan_singleparameter(system, scanrange, plasmonwidthfinder)
 
     scanrange, [x[1] for x in plasmon_minima_output], [x[2] for x in plasmon_minima_output], [z[1] for z in plasmon_width_output], [z[2] for z in plasmon_width_output]
 end
 
 
 function scan_plasmon_dualparameter(system::Function, parameter1s::Vector{<:Number}, parameter2s::Vector{<:Number}, λs::Vector{Float64}, predipps::Int64=1)::Tuple{Vector{<:Number}, Vector, Vector}
-    # A tool for scanning for plasmon peaks across two parameters.
+    # A tool for scaning for plasmon peaks across two parameters.
     # The function runs the single parameter scan on parameter 2 for each of parameter 1, it then plots the optimal parameter 2 as a function of parameter 1.
     
     minRP2s = Vector(undef, length(parameter1s))
@@ -208,7 +208,7 @@ function scan_plasmon_dualparameter(system::Function, parameter1s::Vector{<:Numb
 end
 
 function scan_plasmon_dualthicknesses(system::Function, d1min, d1max, d1step, d2min, d2max, d2step, λs::Vector{Float64}, predipps::Int64=1, layertolerance::Float64=0.5)::Tuple{Vector{<:Number}, Vector, Vector, Vector, Vector}
-    # A tool for scanning for plasmon peaks across two parameters.
+    # A tool for scaning for plasmon peaks across two parameters.
     # The function runs the single parameter scan on parameter 2 for each of parameter 1, it then plots the optimal parameter 2 as a function of parameter 1.
     
     parameter1s = [x for x in d1min:d1step:d1max]

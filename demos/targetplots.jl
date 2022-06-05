@@ -54,7 +54,7 @@ end
 println("\nSingle line timing:")
 @time begin
 system_single = make_layered_tm_system([n1, n2, n3, n4, n5], [d1, d2, d3, d4, d5], θ1)
-xs, ys = scann_singleparameter(system_single, λs)
+xs, ys = scan_singleparameter(system_single, λs)
 end
 fig_single = plot(xs .* 1e9, ys, title="$description, Single scan spectra", xaxis="λ [nm]", yaxis="Power reflection coefficient", legend=false)
 display(fig_single)
