@@ -57,7 +57,7 @@ function plasmon_minima(system::Function, λs::Vector{Float64}, predipps::Int64=
 end
 
 function plasmon_halfwidth(system::Function, λs::Vector{Float64}, predipps::Int64=1, widthratio::Float64=0.5)::Tuple{Float64, Float64, Float64, Float64, Float64}
-    # This function finds the plasmon minima dip half peak width (half can be changed by widthratio parameter).
+    # This function finds the plasmon dip full width at half maximum (half can be changed by widthratio parameter).
     # It opperates similarly to the plasmon_minima function.
 
     λleftmax = 0.0
@@ -145,7 +145,7 @@ function scan_minima(xs::Vector{<:Number}, ys::Vector{<:Number})::Tuple{Number, 
 end
 
 function scan_maxima(xs::Vector{<:Number}, ys::Vector{<:Number})::Tuple{Number, Number}
-    # An optimized function for finding the minimum of a curve.
+    # An optimized function for finding the maximum of a curve.
 
     @assert(length(xs) == length(ys))
     @assert(length(xs) > 0)
